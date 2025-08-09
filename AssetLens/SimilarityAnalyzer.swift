@@ -1,0 +1,135 @@
+//
+//  SimilarityAnalyzer.swift
+//  AssetLens
+//
+//  Created by Tarlan Ismayilsoy on 09.08.25.
+//
+
+import Foundation
+import Vision
+import AppKit
+
+class SimilarityAnalyzer {
+    let threshold: Float
+    private var featurePrintCache: [URL: VNFeaturePrintObservation] = [:]
+    
+    init(threshold: Float) {
+        self.threshold = threshold
+    }
+    
+    func findSimilarGroups(in assets: [ImageAsset], verbose: Bool, debug: Bool = false) throws -> [SimilarityGroup] {
+        var groups: [SimilarityGroup] = []
+        var processedAssets = Set<URL>()
+        
+        // Generate all feature prints first
+        if verbose {
+            print("Generating feature prints for \(assets.count) assets...")
+        }
+        
+        // Pre-generate all feature prints and filter valid assets
+        var validAssets: [ImageAsset] = []
+        for (index, asset) in assets.enumerated() {
+            if verbose && index % 10 == 0 {
+                print("Processing \(index)/\(assets.count) assets...")
+            }
+            if let _ = try getFeaturePrint(for: asset) {
+                validAssets.append(asset)
+            } else if debug {
+                print("⚠️ Could not generate feature print for: \(asset.displayName)")
+            }
+        }
+        
+        if verbose {
+            print("Analyzing similarities for \(validAssets.count) valid assets...")
+        }
+        
+        // Debug mode: show all distances
+        if debug {
+            print("\n📊 Distance Matrix (lower = more similar):")
+            print("Threshold: \(threshold)")
+            print("---")
+        }
+        
+        // Now find similar groups
+        for (index, asset) in validAssets.enumerated() {
+            // Skip if already part of a group
+            guard !processedAssets.contains(asset.url) else { continue }
+            
+            guard let print1 = try getFeaturePrint(for: asset) else { continue }
+            
+            var similarAssets: [(ImageAsset, Float)] = []
+            
+            // Compare with remaining unprocessed assets
+            for otherAsset in validAssets.dropFirst(index + 1) {
+                guard !processedAssets.contains(otherAsset.url),
+                      let print2 = try getFeaturePrint(for: otherAsset) else { continue }
+                
+                // Skip if they're from the same imageset (e.g., @1x, @2x, @3x versions)
+                if asset.isInSameImageset(as: otherAsset) {
+                    continue
+                }
+                
+                var distance: Float = 0
+                try print1.computeDistance(&distance, to: print2)
+                
+                if debug {
+                    print("Distance between '\(asset.displayName)' and '\(otherAsset.displayName)': \(String(format: "%.2f", distance))")
+                }
+                
+                if distance <= threshold {
+                    similarAssets.append((otherAsset, distance))
+                }
+            }
+            
+            // Only create a group if we found similar assets
+            if !similarAssets.isEmpty {
+                // Mark all assets in this group as processed
+                processedAssets.insert(asset.url)
+                for (similarAsset, _) in similarAssets {
+                    processedAssets.insert(similarAsset.url)
+                }
+                
+                let group = SimilarityGroup(
+                    primary: asset,
+                    similar: similarAssets.sorted { $0.1 < $1.1 }
+                )
+                groups.append(group)
+                
+                if debug {
+                    print("✅ Created group with \(similarAssets.count + 1) assets")
+                }
+            }
+        }
+        
+        if debug {
+            print("---")
+            print("Total groups formed: \(groups.count)")
+            print("Assets not in any group: \(validAssets.count - processedAssets.count)")
+        }
+        
+        return groups
+    }
+    
+    private func getFeaturePrint(for asset: ImageAsset) throws -> VNFeaturePrintObservation? {
+        if let cached = featurePrintCache[asset.url] {
+            return cached
+        }
+        
+        guard let image = NSImage(contentsOf: asset.url),
+              let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+        
+        let request = VNGenerateImageFeaturePrintRequest()
+        let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+        
+        try handler.perform([request])
+        
+        guard let observation = request.results?.first as? VNFeaturePrintObservation else {
+            return nil
+        }
+        
+        featurePrintCache[asset.url] = observation
+        return observation
+    }
+}

@@ -81,10 +81,11 @@ class SimilarityAnalyzer {
                 }
             }
             
+            processedAssets.insert(asset.url)
+            
             // Only create a group if we found similar assets
             if !similarAssets.isEmpty {
-                // Mark all assets in this group as processed
-                processedAssets.insert(asset.url)
+                // Mark all similar assets as processed
                 for (similarAsset, _) in similarAssets {
                     processedAssets.insert(similarAsset.url)
                 }
@@ -98,13 +99,16 @@ class SimilarityAnalyzer {
                 if debug {
                     print("✅ Created group with \(similarAssets.count + 1) assets")
                 }
+            } else if debug {
+                print("ℹ️ No similar assets found for '\(asset.displayName)'")
             }
         }
         
         if debug {
             print("---")
             print("Total groups formed: \(groups.count)")
-            print("Assets not in any group: \(validAssets.count - processedAssets.count)")
+            print("Total assets processed: \(processedAssets.count)")
+            print("Assets not in any group: \(validAssets.count - groups.reduce(0) { $0 + $1.similar.count + 1 })")
         }
         
         return groups

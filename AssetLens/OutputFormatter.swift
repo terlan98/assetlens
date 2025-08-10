@@ -32,16 +32,16 @@ struct OutputFormatter {
         
         for (index, group) in groups.enumerated() {
             print("Group \(index + 1):")
-            print("  Primary: \(formatAssetPath(group.primary, from: baseURL))")
+            print("  Primary: \(group.primary.displayName)")
             
             let totalSize = group.totalSize
             let potentialSavings = group.potentialSavings
             
             for (asset, distance) in group.similar {
                 if verbose {
-                    print("  Similar: \(formatAssetPath(asset, from: baseURL)) (distance: \(String(format: "%.2f", distance)))")
+                    print("  Similar: \(asset.displayName) (distance: \(String(format: "%.2f", distance)))")
                 } else {
-                    print("  Similar: \(formatAssetPath(asset, from: baseURL))")
+                    print("  Similar: \(asset.displayName)")
                 }
             }
             
@@ -57,9 +57,11 @@ struct OutputFormatter {
     private func outputJSON(groups: [SimilarityGroup], from baseURL: URL) {
         let output = groups.map { group in
             [
-                "primary": formatAssetPath(group.primary, from: baseURL),
+                "primary": group.primary.displayName,
+                "primaryPath": formatAssetPath(group.primary, from: baseURL),
                 "similar": group.similar.map { asset, distance in
                     [
+                        "name": asset.displayName,
                         "path": formatAssetPath(asset, from: baseURL),
                         "distance": distance
                     ]

@@ -20,7 +20,7 @@ struct AssetLens: ParsableCommand {
     var projectPath: String
     
     @Option(name: .shortAndLong, help: "Similarity threshold (0-50, lower is more similar)") // TODO: update help comment after experimenting
-    var threshold: Float = 0.3
+    var threshold: Float = 0.65
     
     @Option(name: .shortAndLong, help: "Output format (text, json, xcode)")
     var format: OutputFormat = .text

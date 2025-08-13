@@ -17,34 +17,34 @@ class SimilarityAnalyzer {
         self.threshold = threshold
     }
     
-    func findSimilarGroups(in assets: [ImageAsset], verbose: Bool, debug: Bool = false) throws -> [SimilarityGroup] {
+    func findSimilarGroups(in assets: [ImageAsset], verbosity: VerbosityLevel) throws -> [SimilarityGroup] {
         var groups: [SimilarityGroup] = []
         var processedAssets = Set<URL>()
         
         // Generate all feature prints first
-        if verbose {
+        if verbosity >= .verbose {
             print("Generating feature prints for \(assets.count) assets...")
         }
         
         // Pre-generate all feature prints and filter valid assets
         var validAssets: [ImageAsset] = []
         for (index, asset) in assets.enumerated() {
-            if verbose && index % 10 == 0 {
+            if verbosity >= .verbose && index % 10 == 0 {
                 print("Processing \(index)/\(assets.count) assets...")
             }
             if let _ = try getFeaturePrint(for: asset) {
                 validAssets.append(asset)
-            } else if debug {
+            } else if verbosity == .debug {
                 print("⚠️ Could not generate feature print for: \(asset.displayName)")
             }
         }
         
-        if verbose {
+        if verbosity >= .verbose {
             print("Analyzing similarities for \(validAssets.count) valid assets...")
         }
         
         // Debug mode: show all distances
-        if debug {
+        if verbosity == .debug {
             print("\n📊 Distance Matrix (lower = more similar):")
             print("Threshold: \(threshold)")
             print("---")
@@ -72,7 +72,7 @@ class SimilarityAnalyzer {
                 var distance: Float = 0
                 try print1.computeDistance(&distance, to: print2)
                 
-                if debug {
+                if verbosity == .debug {
                     print("Distance between '\(asset.displayName)' and '\(otherAsset.displayName)': \(String(format: "%.2f", distance))")
                 }
                 
@@ -96,15 +96,15 @@ class SimilarityAnalyzer {
                 )
                 groups.append(group)
                 
-                if debug {
+                if verbosity == .debug {
                     print("✅ Created group with \(similarAssets.count + 1) assets")
                 }
-            } else if debug {
+            } else if verbosity == .debug {
                 print("ℹ️ No similar assets found for '\(asset.displayName)'")
             }
         }
         
-        if debug {
+        if verbosity == .debug {
             print("---")
             print("Total groups formed: \(groups.count)")
             print("Total assets processed: \(processedAssets.count)")

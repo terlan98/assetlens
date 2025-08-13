@@ -8,28 +8,33 @@
 import Foundation
 
 class UsageAnalyzer { // TODO: make async
-    func findUnusedAssets(assets: [ImageAsset], in projectURL: URL, verbose: Bool = false) -> Set<ImageAsset> {
+    func findUnusedAssets(assets: [ImageAsset], in projectURL: URL, verbosity: VerbosityLevel) -> Set<ImageAsset> { // TODO: merge with the other function
         guard !assets.isEmpty else { return [] }
         
-        if verbose {
+        if verbosity >= .verbose {
             print("Checking usage of \(assets.count) assets...")
         }
         
         let allAssets = Set(assets)
-        let unusedAssets = findUnusedAssets(from: allAssets, in: projectURL, verbose: verbose)
+        let unusedAssets = findUnusedAssets(from: allAssets, in: projectURL, verbosity: verbosity)
         
-        if verbose {
+        if verbosity >= .verbose {
             print("Found \(unusedAssets.count) potentially unused assets")
         }
         
         return unusedAssets
     }
     
-    private func findUnusedAssets(from assets: Set<ImageAsset>, in projectURL: URL, verbose: Bool) -> Set<ImageAsset> {
+    private func findUnusedAssets(from assets: Set<ImageAsset>, in projectURL: URL, verbosity: VerbosityLevel) -> Set<ImageAsset> {
         let projectPath = projectURL.path
         
         let escapedNames = assets.map { NSRegularExpression.escapedPattern(for: $0.displayName) }
         let pattern = escapedNames.joined(separator: "|")
+        
+        if verbosity == .debug {
+            print("Searching for \(assets.count) asset names in project files...")
+            print("Search pattern length: \(pattern.count) characters")
+        }
         
         // -r: recursive
         // -h: no filenames
@@ -52,7 +57,7 @@ class UsageAnalyzer { // TODO: make async
             .map { String($0) }
             .filter { !$0.isEmpty }
         
-        if verbose && !usedNames.isEmpty {
+        if verbosity >= .verbose && !usedNames.isEmpty {
             print("Found \(usedNames.count) assets referenced in code")
         }
         

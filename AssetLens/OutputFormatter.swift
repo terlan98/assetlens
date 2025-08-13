@@ -8,8 +8,8 @@
 import Foundation
 
 struct OutputFormatter {
-    let format: AssetLens.OutputFormat
-    let verbose: Bool
+    let format: OutputFormat
+    let verbosity: VerbosityLevel
     
     func output(groups: [SimilarityGroup], allAssets: [ImageAsset], from baseURL: URL) {
         switch format {
@@ -39,7 +39,7 @@ struct OutputFormatter {
                 for (asset, distance) in group.similar {
                     var line = "  Similar: \(asset.displayName)"
                     
-                    if verbose {
+                    if verbosity >= .verbose {
                         line += " (distance: \(String(format: "%.2f", distance)))"
                     }
                     
@@ -86,7 +86,7 @@ struct OutputFormatter {
                 print("  Total: \(formatBytes(standaloneSize))")
             }
             
-            if !unusedInGroups.isEmpty && verbose {
+            if !unusedInGroups.isEmpty && verbosity >= .verbose {
                 print("\nUnused assets that have duplicates (see groups above):")
                 for asset in unusedInGroups.sorted(by: { $0.displayName < $1.displayName }) {
                     print("  • \(asset.displayName)")

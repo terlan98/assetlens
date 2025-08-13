@@ -25,8 +25,8 @@ struct AssetLens: ParsableCommand {
     @Option(name: .shortAndLong, help: "Output format (text, json, xcode)")
     var format: OutputFormat = .text
     
-    @Flag(name: .long, help: "Include detailed similarity scores")
-    var verbose = false
+    @Option(name: .shortAndLong, help: "Verbosity level (normal, verbose, debug)")
+    var verbosity: VerbosityLevel = .normal
     
     @Flag(name: .long, help: "Exit with error code if duplicates found")
     var strict = false
@@ -34,15 +34,8 @@ struct AssetLens: ParsableCommand {
     @Option(name: .long, help: "Minimum file size in KB to consider")
     var minSize: Int = 1
     
-    @Flag(name: .long, help: "Show debug information including all distance scores")
-    var debug = false
-    
     @Flag(name: .shortAndLong, help: "Check for unused assets")
     var usageCheck = false
-    
-    enum OutputFormat: String, ExpressibleByArgument {
-        case text, json, xcode
-    }
     
     mutating func run() throws {
         let scanner = AssetScanner()
@@ -55,7 +48,7 @@ struct AssetLens: ParsableCommand {
         // Scan for assets
         if format == .xcode {
             print("note: Scanning \(url.lastPathComponent) for similar assets...")
-        } else if !verbose {
+        } else if verbosity == .normal {
             print("Scanning \(url.path)...")
         }
         
@@ -66,7 +59,7 @@ struct AssetLens: ParsableCommand {
             throw ExitCode.failure
         }
         
-        if verbose && format != .xcode {
+        if verbosity >= .verbose && format != .xcode {
             print("Found \(assets.count) assets to analyze")
         }
         
@@ -74,7 +67,7 @@ struct AssetLens: ParsableCommand {
         var unusedAssets: Set<ImageAsset> = []
         if usageCheck {
             let usageAnalyzer = UsageAnalyzer()
-            unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbose: verbose && format != .xcode)
+            unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: verbosity)
             
             // Update isUsed for ALL assets
             for i in assets.indices {
@@ -83,10 +76,10 @@ struct AssetLens: ParsableCommand {
         }
         
         // Analyze similarities - assets now have isUsed already set
-        let groups = try analyzer.findSimilarGroups(in: assets, verbose: verbose && format != .xcode, debug: debug)
+        let groups = try analyzer.findSimilarGroups(in: assets, verbosity: verbosity)
         
         // Output results
-        let formatter = OutputFormatter(format: format, verbose: verbose)
+        let formatter = OutputFormatter(format: format, verbosity: verbosity)
         formatter.output(groups: groups, allAssets: assets, from: url)
         
         // Exit code for CI/CD integration

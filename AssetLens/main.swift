@@ -59,7 +59,7 @@ struct AssetLens: ParsableCommand {
             print("Scanning \(url.path)...")
         }
         
-        let assets = try scanner.scanDirectory(at: url, minSizeKB: minSize)
+        var assets = try scanner.scanDirectory(at: url, minSizeKB: minSize)
         
         guard !assets.isEmpty else {
             print("No image assets found at \(url.path)")
@@ -70,19 +70,24 @@ struct AssetLens: ParsableCommand {
             print("Found \(assets.count) assets to analyze")
         }
         
-        // Analyze similarities
-        let groups = try analyzer.findSimilarGroups(in: assets, verbose: verbose && format != .xcode, debug: debug)
-        
         // Check for unused assets if requested
         var unusedAssets: Set<ImageAsset> = []
         if usageCheck {
             let usageAnalyzer = UsageAnalyzer()
             unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbose: verbose && format != .xcode)
+            
+            // Update isUsed for ALL assets
+            for i in assets.indices {
+                assets[i].isUsed = !unusedAssets.contains(assets[i])  // Fixed: NOT operator added
+            }
         }
+        
+        // Analyze similarities - assets now have isUsed already set
+        let groups = try analyzer.findSimilarGroups(in: assets, verbose: verbose && format != .xcode, debug: debug)
         
         // Output results
         let formatter = OutputFormatter(format: format, verbose: verbose)
-        formatter.output(groups: groups, unusedAssets: unusedAssets, from: url)
+        formatter.output(groups: groups, allAssets: assets, from: url)
         
         // Exit code for CI/CD integration
         if strict && !groups.isEmpty {

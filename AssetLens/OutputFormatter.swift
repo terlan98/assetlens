@@ -11,18 +11,18 @@ struct OutputFormatter {
     let format: AssetLens.OutputFormat
     let verbose: Bool
     
-    func output(groups: [SimilarityGroup], unusedAssets: Set<ImageAsset> = [], from baseURL: URL) {
+    func output(groups: [SimilarityGroup], allAssets: [ImageAsset], from baseURL: URL) {
         switch format {
         case .text:
-            outputText(groups: groups, unusedAssets: unusedAssets, from: baseURL)
+            outputText(groups: groups, allAssets: allAssets, from: baseURL)
         case .json:
-            outputJSON(groups: groups, unusedAssets: unusedAssets, from: baseURL)
+            outputJSON(groups: groups, allAssets: allAssets, from: baseURL)
         case .xcode:
-            outputXcode(groups: groups, unusedAssets: unusedAssets, from: baseURL)
+            outputXcode(groups: groups, allAssets: allAssets, from: baseURL)
         }
     }
     
-    private func outputText(groups: [SimilarityGroup], unusedAssets: Set<ImageAsset>, from baseURL: URL) {
+    private func outputText(groups: [SimilarityGroup], allAssets: [ImageAsset], from baseURL: URL) {
         // Similar assets section
         if groups.isEmpty {
             print("✅ No similar assets found")
@@ -31,26 +31,19 @@ struct OutputFormatter {
             
             for (index, group) in groups.enumerated() {
                 print("Group \(index + 1):")
-                print("  Primary: \(group.primary.displayName)")
-                
-                // Mark if unused
-                let primaryUnused = unusedAssets.contains(group.primary)
-                if primaryUnused {
-                    print("    ⚠️ UNUSED - safe to delete")
-                }
+                print("  Primary: \(group.primary.displayName)\(group.primary.isUsed == false ? " - ⚠️ UNUSED" : "")")
                 
                 let totalSize = group.totalSize
                 let potentialSavings = group.potentialSavings
                 
                 for (asset, distance) in group.similar {
-                    let assetUnused = unusedAssets.contains(asset)
                     var line = "  Similar: \(asset.displayName)"
                     
                     if verbose {
                         line += " (distance: \(String(format: "%.2f", distance)))"
                     }
                     
-                    if assetUnused {
+                    if asset.isUsed == false {
                         line += " - ⚠️ UNUSED"
                     }
                     
@@ -61,7 +54,7 @@ struct OutputFormatter {
                 print("  Potential savings: \(formatBytes(potentialSavings))")
                 
                 // If all assets in group are unused, highlight this
-                let allUnused = group.allAssets.allSatisfy { unusedAssets.contains($0) }
+                let allUnused = group.allAssets.allSatisfy { $0.isUsed == false }
                 if allUnused {
                     print("  💡 All assets in this group are unused - \(formatBytes(totalSize)) can be freed immediately!")
                 }
@@ -73,18 +66,15 @@ struct OutputFormatter {
             print("💡 Total potential savings from duplicates: \(formatBytes(totalSavings))")
         }
         
-        // Unused assets section
+        // Unused assets section - only show if usage was checked
+        let unusedAssets = allAssets.filter { $0.isUsed == false }
         if !unusedAssets.isEmpty {
             print("\n🗑️ Found \(unusedAssets.count) potentially unused asset(s):\n")
             
             // Group unused assets by whether they're in similarity groups
-            let unusedInGroups = unusedAssets.filter { asset in
-                groups.contains { group in
-                    group.allAssets.contains(asset)
-                }
-            }
-            
-            let unusedStandalone = unusedAssets.subtracting(unusedInGroups)
+            let assetsInGroups = Set(groups.flatMap { $0.allAssets })
+            let unusedInGroups = unusedAssets.filter { assetsInGroups.contains($0) }
+            let unusedStandalone = unusedAssets.filter { !assetsInGroups.contains($0) }
             
             if !unusedStandalone.isEmpty {
                 print("Unused standalone assets (safe to delete):")
@@ -108,7 +98,7 @@ struct OutputFormatter {
         }
     }
     
-    private func outputJSON(groups: [SimilarityGroup], unusedAssets: Set<ImageAsset>, from baseURL: URL) {
+    private func outputJSON(groups: [SimilarityGroup], allAssets: [ImageAsset], from baseURL: URL) {
         var output: [String: Any] = [:]
         
         // Similar groups
@@ -117,41 +107,46 @@ struct OutputFormatter {
                 "primary": [
                     "name": group.primary.displayName,
                     "path": formatAssetPath(group.primary, from: baseURL),
-                    "unused": unusedAssets.contains(group.primary)
+                    "unused": group.primary.isUsed == false
                 ],
                 "similar": group.similar.map { asset, distance in
                     [
                         "name": asset.displayName,
                         "path": formatAssetPath(asset, from: baseURL),
                         "distance": distance,
-                        "unused": unusedAssets.contains(asset)
+                        "unused": asset.isUsed == false
                     ]
                 },
                 "totalSize": group.totalSize,
                 "potentialSavings": group.potentialSavings,
-                "allUnused": group.allAssets.allSatisfy { unusedAssets.contains($0) }
+                "allUnused": group.allAssets.allSatisfy { $0.isUsed == false }
             ]
         }
         
-        // Unused assets
-        output["unusedAssets"] = unusedAssets.map { asset in
-            [
-                "name": asset.displayName,
-                "path": formatAssetPath(asset, from: baseURL),
-                "size": asset.fileSize
-            ]
+        // Unused assets (only if usage was checked)
+        let unusedAssets = allAssets.filter { $0.isUsed == false }
+        if !unusedAssets.isEmpty {
+            output["unusedAssets"] = unusedAssets.map { asset in
+                [
+                    "name": asset.displayName,
+                    "path": formatAssetPath(asset, from: baseURL),
+                    "size": asset.fileSize
+                ]
+            }
         }
         
         // Summary
         let totalDuplicateSavings = groups.reduce(0) { $0 + $1.potentialSavings }
         let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }
+        let usageChecked = allAssets.first?.isUsed != nil
         
         output["summary"] = [
             "totalGroups": groups.count,
             "totalUnused": unusedAssets.count,
             "duplicateSavings": totalDuplicateSavings,
             "unusedSize": totalUnusedSize,
-            "totalPotentialSavings": totalDuplicateSavings + totalUnusedSize
+            "totalPotentialSavings": totalDuplicateSavings + totalUnusedSize,
+            "usageChecked": usageChecked
         ]
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: output, options: .prettyPrinted),
@@ -160,20 +155,21 @@ struct OutputFormatter {
         }
     }
     
-    private func outputXcode(groups: [SimilarityGroup], unusedAssets: Set<ImageAsset>, from baseURL: URL) {
+    private func outputXcode(groups: [SimilarityGroup], allAssets: [ImageAsset], from baseURL: URL) {
         // Output similar assets warnings
         for group in groups {
             let primaryPath = group.primary.url.path
-            let unusedTag = unusedAssets.contains(group.primary) ? " [UNUSED]" : ""
+            let unusedTag = group.primary.isUsed == false ? " [UNUSED]" : ""
             print("warning: \(primaryPath):1:1: Similar assets detected - \(group.primary.displayName)\(unusedTag)")
             
             for (asset, _) in group.similar {
-                let assetUnusedTag = unusedAssets.contains(asset) ? " [UNUSED]" : ""
+                let assetUnusedTag = asset.isUsed == false ? " [UNUSED]" : ""
                 print("note: \(asset.url.path):1:1: Similar to \(group.primary.displayName)\(assetUnusedTag)")
             }
         }
         
-        // Output unused assets warnings
+        // Output unused assets warnings (only if usage was checked)
+        let unusedAssets = allAssets.filter { $0.isUsed == false }
         for asset in unusedAssets {
             print("warning: \(asset.url.path):1:1: Potentially unused asset - \(asset.displayName)")
         }

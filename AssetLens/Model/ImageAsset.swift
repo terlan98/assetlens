@@ -9,6 +9,7 @@ import Foundation
 
 struct ImageAsset {
     let url: URL
+    var isUsed: Bool?
     
     var fileSize: Int64 {
         (try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize).map(Int64.init) ?? 0

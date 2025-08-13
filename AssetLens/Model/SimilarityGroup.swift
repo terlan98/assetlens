@@ -8,8 +8,8 @@
 import Foundation
 
 struct SimilarityGroup {
-    let primary: ImageAsset
-    let similar: [(ImageAsset, Float)]
+    var primary: ImageAsset
+    var similar: [(ImageAsset, Float)]
     
     /// All assets in the group (primary + similar)
     var allAssets: [ImageAsset] {

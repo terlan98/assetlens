@@ -37,6 +37,9 @@ struct AssetLens: ParsableCommand {
     @Flag(name: .long, help: "Show debug information including all distance scores")
     var debug = false
     
+    @Flag(name: .shortAndLong, help: "Check for unused assets")
+    var usageCheck = false
+    
     enum OutputFormat: String, ExpressibleByArgument {
         case text, json, xcode
     }
@@ -70,9 +73,16 @@ struct AssetLens: ParsableCommand {
         // Analyze similarities
         let groups = try analyzer.findSimilarGroups(in: assets, verbose: verbose && format != .xcode, debug: debug)
         
+        // Check for unused assets if requested
+        var unusedAssets: Set<ImageAsset> = []
+        if usageCheck {
+            let usageAnalyzer = UsageAnalyzer()
+            unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbose: verbose && format != .xcode)
+        }
+        
         // Output results
         let formatter = OutputFormatter(format: format, verbose: verbose)
-        formatter.output(groups: groups, from: url)
+        formatter.output(groups: groups, unusedAssets: unusedAssets, from: url)
         
         // Exit code for CI/CD integration
         if strict && !groups.isEmpty {

@@ -8,7 +8,7 @@
 import Foundation
 
 class UsageAnalyzer { // TODO: make async
-    func findUnusedAssets(assets: [ImageAsset], in projectURL: URL, verbosity: VerbosityLevel) -> Set<ImageAsset> { // TODO: merge with the other function
+    func findUnusedAssets(assets: [ImageAsset], in projectURL: URL, verbosity: VerbosityLevel) -> Set<ImageAsset> {
         guard !assets.isEmpty else { return [] }
         
         if verbosity >= .verbose {
@@ -39,13 +39,22 @@ class UsageAnalyzer { // TODO: make async
                     -rhoI -E '\(pattern)' '\(projectPath)' | sort -u
                     """
         
-        let result = shell(command)
+        let result = execute(command)
         
         // Parse the output to get used asset names
-        let usedNames = result.output
-            .split(separator: "\n")
-            .map { String($0) }
-            .filter { !$0.isEmpty }
+        var usedNames: [String] = []
+        
+        switch result {
+        case .success(let commandResult):
+            usedNames = commandResult.output
+                .split(separator: "\n")
+                .map { String($0) }
+                .filter { !$0.isEmpty }
+        case .failure(let error):
+            if verbosity >= .debug {
+                print("Error during shell command execution: \(error)")
+            }
+        }
         
         let unusedAssets = assets.filter { !usedNames.contains($0.displayName) }
         
@@ -53,7 +62,7 @@ class UsageAnalyzer { // TODO: make async
     }
     
     @discardableResult
-    private func shell(_ command: String) -> (output: String, exitCode: Int32) {
+    private func execute(_ command: String) -> Result<CommandResult, Error> {
         let task = Process()
         let pipe = Pipe()
         
@@ -71,11 +80,16 @@ class UsageAnalyzer { // TODO: make async
             let output = String(data: data, encoding: .utf8)?
                 .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
             
-            return (output, task.terminationStatus)
+            return .success(.init(output: output, exitCode: task.terminationStatus))
         } catch {
-            return ("", -1)
+            return .failure(error)
         }
     }
+}
+
+struct CommandResult {
+    var output: String
+    var exitCode: Int32
 }
 
 // Make ImageAsset Hashable for Set operations

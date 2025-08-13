@@ -15,17 +15,7 @@ class UsageAnalyzer { // TODO: make async
             print("Checking usage of \(assets.count) assets...")
         }
         
-        let allAssets = Set(assets)
-        let unusedAssets = findUnusedAssets(from: allAssets, in: projectURL, verbosity: verbosity)
-        
-        if verbosity >= .verbose {
-            print("Found \(unusedAssets.count) potentially unused assets")
-        }
-        
-        return unusedAssets
-    }
-    
-    private func findUnusedAssets(from assets: Set<ImageAsset>, in projectURL: URL, verbosity: VerbosityLevel) -> Set<ImageAsset> {
+        let assets = Set(assets)
         let projectPath = projectURL.path
         
         let escapedNames = assets.map { NSRegularExpression.escapedPattern(for: $0.displayName) }
@@ -57,11 +47,9 @@ class UsageAnalyzer { // TODO: make async
             .map { String($0) }
             .filter { !$0.isEmpty }
         
-        if verbosity >= .verbose && !usedNames.isEmpty {
-            print("Found \(usedNames.count) assets referenced in code")
-        }
+        let unusedAssets = assets.filter { !usedNames.contains($0.displayName) }
         
-        return assets.filter { !usedNames.contains($0.displayName) }
+        return unusedAssets
     }
     
     @discardableResult

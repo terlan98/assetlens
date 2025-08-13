@@ -12,7 +12,6 @@ struct AssetScanner {
     
     func scanDirectory(at url: URL, minSizeKB: Int) throws -> [ImageAsset] {
         var assets: [ImageAsset] = []
-        var processedImagesets = Set<String>() // Track imagesets we've already processed
         let fileManager = FileManager.default
         
         guard let enumerator = fileManager.enumerator(
@@ -24,6 +23,11 @@ struct AssetScanner {
         }
         
         for case let fileURL as URL in enumerator {
+            // Only process files inside .imageset directories
+            guard fileURL.path.contains(".imageset/") else {
+                continue
+            }
+            
             // Skip non-image files
             guard supportedExtensions.contains(fileURL.pathExtension.lowercased()) else {
                 continue
@@ -35,28 +39,12 @@ struct AssetScanner {
                 continue
             }
             
-            // Skip Launch images and generated files
-            let filename = fileURL.lastPathComponent
-            if filename.contains("LaunchImage") ||
-               filename.contains(".generated.") ||
-               filename.contains("~") {
-                continue
-            }
-            
             let asset = ImageAsset(url: fileURL)
             
-            // If this is part of an imageset, only include one representative image
-            if let imagesetName = asset.imagesetName {
-                // Create a unique key for this imageset location
-                let imagesetKey = asset.relativePath
-                
-                if !processedImagesets.contains(imagesetKey) {
-                    processedImagesets.insert(imagesetKey)
-                    assets.append(asset)
-                }
-                // Skip other images in the same imageset
-            } else {
-                // Not in an imageset, include it
+            // Check if we already have an asset from this imageset
+            let alreadyHasAssetFromSameImageset = assets.contains {  $0.relativePath == asset.relativePath }
+            
+            if !alreadyHasAssetFromSameImageset {
                 assets.append(asset)
             }
         }

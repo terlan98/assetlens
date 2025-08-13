@@ -21,8 +21,11 @@ struct SimilarityGroup {
     }
     
     var potentialSavings: Int64 {
-        let totalSize = allAssets.reduce(0) { $0 + $1.fileSize }
-        let smallestAssetSize = allAssets.map { $0.fileSize }.min() ?? 0
-        return totalSize - smallestAssetSize
+        if allAssets.allSatisfy({ $0.isUsed == false }) {
+            return totalSize
+        } else {
+            let smallestAssetSize = allAssets.map { $0.fileSize }.min() ?? 0
+            return totalSize - smallestAssetSize
+        }
     }
 }

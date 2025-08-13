@@ -19,7 +19,7 @@ struct AssetLens: ParsableCommand {
     @Argument(help: "Path to Xcode project or .xcassets catalog")
     var projectPath: String
     
-    @Option(name: .shortAndLong, help: "Similarity threshold (0-50, lower is more similar)") // TODO: update help comment after experimenting
+    @Option(name: .shortAndLong, help: "Similarity threshold (lower is more similar)")
     var threshold: Float = 0.5
     
     @Option(name: .shortAndLong, help: "Output format (text, json, xcode)")

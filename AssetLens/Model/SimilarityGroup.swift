@@ -17,7 +17,7 @@ struct SimilarityGroup {
     }
     
     var totalSize: Int64 {
-        primary.fileSize + similar.reduce(0) { $0 + $1.0.fileSize }
+        allAssets.reduce(0) { $0 + $1.fileSize }
     }
     
     var potentialSavings: Int64 {

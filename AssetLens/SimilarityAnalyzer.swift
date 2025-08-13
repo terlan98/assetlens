@@ -43,14 +43,13 @@ class SimilarityAnalyzer {
             print("Analyzing similarities for \(validAssets.count) valid assets...")
         }
         
-        // Debug mode: show all distances
         if verbosity == .debug {
             print("\n📊 Distance Matrix (lower = more similar):")
             print("Threshold: \(threshold)")
             print("---")
         }
         
-        // Now find similar groups
+        // Dind similar groups
         for (index, asset) in validAssets.enumerated() {
             // Skip if already part of a group
             guard !processedAssets.contains(asset.url) else { continue }

@@ -71,11 +71,11 @@ struct AssetLens: ParsableCommand {
             
             // Update isUsed for ALL assets
             for i in assets.indices {
-                assets[i].isUsed = !unusedAssets.contains(assets[i])  // Fixed: NOT operator added
+                assets[i].isUsed = !unusedAssets.contains(assets[i])
             }
         }
         
-        // Analyze similarities - assets now have isUsed already set
+        // Analyze similarities
         let groups = try analyzer.findSimilarGroups(in: assets, verbosity: verbosity)
         
         // Output results

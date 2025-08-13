@@ -53,7 +53,7 @@ struct OutputFormatter {
                 print("  Total size: \(formatBytes(totalSize))")
                 print("  Potential savings: \(formatBytes(potentialSavings))")
                 
-                // If all assets in group are unused, highlight this
+                // Inform the user if all assets in group are unused
                 let allUnused = group.allAssets.allSatisfy { $0.isUsed == false }
                 if allUnused {
                     print("  💡 All assets in this group are unused - \(formatBytes(totalSize)) can be freed immediately!")
@@ -123,7 +123,7 @@ struct OutputFormatter {
             ]
         }
         
-        // Unused assets (only if usage was checked)
+        // Unused assets
         let unusedAssets = allAssets.filter { $0.isUsed == false }
         if !unusedAssets.isEmpty {
             output["unusedAssets"] = unusedAssets.map { asset in
@@ -168,7 +168,7 @@ struct OutputFormatter {
             }
         }
         
-        // Output unused assets warnings (only if usage was checked)
+        // Output unused assets warnings
         let unusedAssets = allAssets.filter { $0.isUsed == false }
         for asset in unusedAssets {
             print("warning: \(asset.url.path):1:1: Potentially unused asset - \(asset.displayName)")

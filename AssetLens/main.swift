@@ -7,6 +7,7 @@
 
 import Foundation
 import ArgumentParser
+import AssetLensCore
 
 // MARK: - Command Line Interface
 struct AssetLens: ParsableCommand {
@@ -88,6 +89,8 @@ struct AssetLens: ParsableCommand {
         }
     }
 }
+
+extension VerbosityLevel: @retroactive ExpressibleByArgument {}
 
 // MARK: - Main Entry Point
 AssetLens.main()

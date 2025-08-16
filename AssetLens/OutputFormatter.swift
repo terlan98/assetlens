@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import AssetLensCore
 
 struct OutputFormatter {
     let format: OutputFormat

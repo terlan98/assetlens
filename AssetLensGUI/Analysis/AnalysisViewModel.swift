@@ -20,7 +20,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
     // Analysis Settings
     @Published var threshold: Double = 0.5
     @Published var minFileSize: Int = 1
-    @Published var shouldCheckUsage = false
+    @Published var shouldCheckUsage = true
     
     init(selectedPath: String) {
         self.selectedPath = selectedPath

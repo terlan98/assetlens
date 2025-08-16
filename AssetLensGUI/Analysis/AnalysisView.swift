@@ -16,14 +16,14 @@ struct AnalysisView: View {
     
     var body: some View {
         VStack(spacing: 30) {
-            HStack {
+            HStack(spacing: 20) {
                 appIconSection
                 
                 if !viewModel.isAnalyzing {
                     settingsSection
                 }
             }
-            .padding()
+            .padding(20)
             .background(Color.gray.opacity(0.05))
             .cornerRadius(12)
             
@@ -46,7 +46,6 @@ struct AnalysisView: View {
                 Image(nsImage: appIcon)
                     .resizable()
                     .scaledToFit()
-//                    .frame(width: 128, height: 128)
                     .cornerRadius(20)
                     .shadow(radius: 10)
             } else { // Placeholder

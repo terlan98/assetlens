@@ -1,0 +1,21 @@
+//
+//  Router.swift
+//  AssetLens
+//
+//  Created by Tarlan Ismayilsoy on 16.08.25.
+//
+
+import SwiftUI
+
+class Router: ObservableObject {
+    @Published var path: NavigationPath = NavigationPath()
+    static let shared: Router = Router()
+    private init() {}
+    
+    func destination(for route: Route) -> some View {
+        switch route {
+        case .analysis:
+            AnalysisView()
+        }
+    }
+}

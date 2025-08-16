@@ -9,21 +9,11 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 @MainActor
-class FilePickerViewModel: ObservableObject {
-    @Published var selectedPath: String?
+class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
     @Published var isDragOver = false
-    @Published var isAnalyzing = false
     @Published var errorMessage: String?
     
-    // Computed property for UI display
-    var selectedProjectName: String? {
-        guard let path = selectedPath else { return nil }
-        return URL(fileURLWithPath: path).lastPathComponent
-    }
-    
-    var canAnalyze: Bool {
-        selectedPath != nil && !isAnalyzing
-    }
+    private var selectedPath: String?
     
     // MARK: - File Selection
     
@@ -76,12 +66,14 @@ class FilePickerViewModel: ObservableObject {
             let projectDirectory = url.deletingLastPathComponent().path
             selectedPath = projectDirectory
             errorMessage = nil
+            Router.shared.path.append(Route.analysis)
             print("Selected directory for analysis: \(projectDirectory)")
         } else if url.hasDirectoryPath {
             // User selected a directory - check if it contains a project
             if directoryContainsXcodeProject(at: url) {
                 selectedPath = path
                 errorMessage = nil
+                Router.shared.path.append(Route.analysis)
                 print("Selected directory: \(path)")
             } else {
                 errorMessage = "Selected folder doesn't contain an Xcode project"
@@ -107,41 +99,5 @@ class FilePickerViewModel: ObservableObject {
                    name.hasSuffix(".xcworkspace") ||
                    name.hasSuffix(".xcassets")
         } ?? false
-    }
-    
-    // MARK: - Analysis
-    
-    func analyzeProject() {
-        guard let path = selectedPath else { return }
-        
-        isAnalyzing = true
-        errorMessage = nil
-        
-        // Simulate analysis for now
-        print("Starting analysis of project at: \(path)")
-        
-        // TODO: Replace with actual AssetLensCore call
-        Task {
-            do {
-                // Simulated delay
-                try await Task.sleep(nanoseconds: 2_000_000_000)
-                
-                // let analyzer = AssetLensCore(path: path)
-                // let results = try await analyzer.analyze()
-                // self.handleResults(results)
-                
-                print("Analysis complete for: \(path)")
-                isAnalyzing = false
-            } catch {
-                errorMessage = "Analysis failed: \(error.localizedDescription)"
-                isAnalyzing = false
-            }
-        }
-    }
-    
-    func clearSelection() {
-        selectedPath = nil
-        errorMessage = nil
-        isAnalyzing = false
     }
 }

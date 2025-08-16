@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var router = Router.shared
+    
     var body: some View {
-        FilePickerView()
-            .frame(minWidth: 400, minHeight: 600)
+        NavigationStack(path: $router.path) {
+            FilePickerView()
+                .navigationDestination(for: Route.self, destination: router.destination(for:))
+        }
+        .frame(minWidth: 400, minHeight: 600)
     }
 }
 

@@ -16,10 +16,6 @@ struct FilePickerView: View {
             headerSection
             dropZoneSection
             
-            if viewModel.selectedPath != nil {
-                selectedPathSection
-            }
-            
             if let error = viewModel.errorMessage {
                 errorSection(error)
             }
@@ -66,7 +62,7 @@ struct FilePickerView: View {
             }
             .buttonStyle(.borderedProminent)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(80)
         .background {
             RoundedRectangle(cornerRadius: 12)
@@ -80,51 +76,6 @@ struct FilePickerView: View {
         ) { providers in
             viewModel.handleDrop(providers: providers)
         }
-    }
-    
-    private var selectedPathSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Label("Selected Project", systemImage: "checkmark.circle.fill")
-                    .font(.headline)
-                    .foregroundColor(.green)
-                
-                Spacer()
-                
-                Button("Clear") {
-                    viewModel.clearSelection()
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.secondary)
-            }
-            
-            Text(viewModel.selectedPath ?? "")
-                .font(.system(.caption, design: .monospaced))
-                .padding(8)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(6)
-                .textSelection(.enabled)
-            
-            Button(action: viewModel.analyzeProject) {
-                if viewModel.isAnalyzing {
-                    HStack {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Analyzing...")
-                    }
-                } else {
-                    Text("Analyze")
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .frame(maxWidth: .infinity)
-            .disabled(!viewModel.canAnalyze)
-        }
-        .padding()
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(8)
     }
     
     private func errorSection(_ error: String) -> some View {

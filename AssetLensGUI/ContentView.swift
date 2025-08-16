@@ -15,7 +15,6 @@ struct ContentView: View {
             FilePickerView()
                 .navigationDestination(for: Route.self, destination: router.destination(for:))
         }
-        .frame(minWidth: 400, minHeight: 600)
     }
 }
 

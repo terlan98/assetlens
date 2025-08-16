@@ -13,6 +13,8 @@ struct AssetLensGUIApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .frame(minWidth: 600, minHeight: 600)
         }
+        .windowResizability(.contentSize)
     }
 }

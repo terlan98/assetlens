@@ -7,10 +7,15 @@
 
 import SwiftUI
 
+@MainActor
 class Router: ObservableObject {
     @Published var path: NavigationPath = NavigationPath()
     static let shared: Router = Router()
     private init() {}
+    
+    func push(_ route: Route) {
+        path.append(route)
+    }
     
     func destination(for route: Route) -> some View {
         switch route {

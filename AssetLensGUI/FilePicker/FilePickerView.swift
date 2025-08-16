@@ -12,33 +12,28 @@ struct FilePickerView: View {
     @StateObject private var viewModel = FilePickerViewModel()
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Title Section
+        VStack(spacing: 50) {
             headerSection
-            
-            // Drop Zone
             dropZoneSection
             
-            // Selected Path Display
             if viewModel.selectedPath != nil {
                 selectedPathSection
             }
             
-            // Error Display
             if let error = viewModel.errorMessage {
                 errorSection(error)
             }
-            
-            Spacer()
         }
         .padding(30)
-        .frame(minWidth: 500, minHeight: 500)
     }
-    
-    // MARK: - View Components
     
     private var headerSection: some View {
         VStack(spacing: 8) {
+            Image(.filePickerIcon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+
             Text("AssetLens")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -52,14 +47,18 @@ struct FilePickerView: View {
     private var dropZoneSection: some View {
         VStack(spacing: 16) {
             Image(systemName: "arrow.down.doc.fill")
+                .symbolEffect(.variableColor, options: .speed(0.35))
                 .font(.system(size: 48))
                 .foregroundColor(viewModel.isDragOver ? .accentColor : .secondary)
             
-            Text("Drop your .xcodeproj or .xcworkspace here")
-                .font(.headline)
+            Text("Drop your .xcodeproj or .xcworkspace file here")
+                .font(.footnote)
+                .textCase(.uppercase)
+                .multilineTextAlignment(.center)
             
             Text("or")
                 .font(.caption)
+                .textCase(.uppercase)
                 .foregroundColor(.secondary)
             
             Button("Browse Files") {
@@ -148,5 +147,6 @@ struct FilePickerView: View {
 struct FilePickerView_Previews: PreviewProvider {
     static var previews: some View {
         FilePickerView()
+            .frame(width: 500, height: 600)
     }
 }

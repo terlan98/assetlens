@@ -12,7 +12,7 @@ import SwiftUI
 struct AssetLensGUIApp: App {
     var body: some Scene {
         WindowGroup {
-            FilePickerView()
+            ContentView()
         }
     }
 }

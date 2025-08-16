@@ -66,14 +66,14 @@ class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
             let projectDirectory = url.deletingLastPathComponent().path
             selectedPath = projectDirectory
             errorMessage = nil
-            Router.shared.path.append(Route.analysis)
+            Router.shared.path.append(Route.analysis(viewModel: .init(selectedPath: projectDirectory)))
             print("Selected directory for analysis: \(projectDirectory)")
         } else if url.hasDirectoryPath {
             // User selected a directory - check if it contains a project
             if directoryContainsXcodeProject(at: url) {
                 selectedPath = path
                 errorMessage = nil
-                Router.shared.path.append(Route.analysis)
+                Router.shared.path.append(Route.analysis(viewModel: .init(selectedPath: path)))
                 print("Selected directory: \(path)")
             } else {
                 errorMessage = "Selected folder doesn't contain an Xcode project"

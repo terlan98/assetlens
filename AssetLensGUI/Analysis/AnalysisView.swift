@@ -27,7 +27,14 @@ struct AnalysisView: View {
             }
             .padding(20)
             .background(Color.gray.opacity(0.05))
-            .clipShape(.rect(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius))
+            .clipShape(
+                .rect(
+                    topLeadingRadius: cornerRadius,
+                    bottomLeadingRadius: viewModel.isAnalyzing ? cornerRadius : 0,
+                    bottomTrailingRadius: viewModel.isAnalyzing ? cornerRadius : 0,
+                    topTrailingRadius: cornerRadius
+                )
+            )
             
             if !viewModel.isAnalyzing {
                 analyzeButton
@@ -35,6 +42,7 @@ struct AnalysisView: View {
         }
         .padding(40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut, value: viewModel.isAnalyzing)
         .onAppear {
             viewModel.loadAppIcon()
         }
@@ -43,21 +51,30 @@ struct AnalysisView: View {
     // MARK: - View Components
     
     private var appIconSection: some View {
-        ZStack {
-            if let appIcon = viewModel.appIcon {
-                Image(nsImage: appIcon)
-                    .resizable()
-                    .scaledToFit()
-                    .cornerRadius(20)
-                    .shadow(radius: 10)
-            } else { // Placeholder
-                Image(systemName: "app.dashed")
-                    .font(.system(size: 128))
-                    .foregroundColor(.secondary)
+        VStack(spacing: 20) {
+            Group {
+                if let appIcon = viewModel.appIcon {
+                    Image(nsImage: appIcon)
+                        .resizable()
+                        .scaledToFit()
+                        .cornerRadius(20)
+                        .shadow(radius: 10)
+                } else { // Placeholder
+                    Image(systemName: "app.dashed")
+                        .resizable()
+                        .scaledToFit()
+                        .foregroundColor(.secondary)
+                }
+            }
+            .padding()
+            .overlay {
+                if viewModel.isAnalyzing {
+                    analysisOverlay
+                }
             }
             
             if viewModel.isAnalyzing {
-                analysisOverlay
+                analysisProgressView
             }
         }
         .frame(maxWidth: 200)
@@ -65,22 +82,16 @@ struct AnalysisView: View {
     
     private var analysisOverlay: some View {
         ZStack {
-            // Animated magnifying glass
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 48))
-                .foregroundColor(.white)
-                .symbolEffect(.pulse, options: .repeating)
-//                .offset(x: viewModel.magnifyingGlassOffset.width,
-//                       y: viewModel.magnifyingGlassOffset.height)
-//                .animation(
-//                    Animation.easeInOut(duration: 2)
-//                        .repeatForever(autoreverses: true),
-//                    value: viewModel.magnifyingGlassOffset
-//                )
-//                .onAppear {
-//                    viewModel.startMagnifyingAnimation()
-//                }
+            RoundedRectangle(cornerRadius: 20)
+                .foregroundStyle(.gray.opacity(0.2))
         }
+    }
+    
+    private var analysisProgressView: some View {
+        ProgressView {
+            Text("Analyzing...")
+        }
+        .progressViewStyle(.linear)
     }
     
     private var settingsSection: some View {
@@ -96,7 +107,9 @@ struct AnalysisView: View {
                     HStack {
                         Label("Similarity Threshold", systemImage: "eye")
                             .font(.headline)
+                        
                         Spacer()
+                        
                         Text(String(format: "%.1f", viewModel.threshold))
                             .font(.system(.body, design: .monospaced))
                             .foregroundColor(.secondary)
@@ -141,6 +154,7 @@ struct AnalysisView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Label("Check for Unused Assets", systemImage: "square.stack.3d.up.slash.fill")
                             .font(.headline)
+                        
                         Text("Scan code to find assets that aren't referenced")
                             .font(.caption)
                             .foregroundColor(.secondary)

@@ -10,12 +10,14 @@ import SwiftUI
 struct AnalysisView: View {
     @StateObject private var viewModel: AnalysisViewModel
 
+    private let cornerRadius: CGFloat = 12
+    
     init(_ viewModel: @escaping @autoclosure (() -> AnalysisViewModel)) {
         _viewModel = .init(wrappedValue: viewModel())
     }
     
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 0) {
             HStack(spacing: 20) {
                 appIconSection
                 
@@ -25,7 +27,7 @@ struct AnalysisView: View {
             }
             .padding(20)
             .background(Color.gray.opacity(0.05))
-            .cornerRadius(12)
+            .clipShape(.rect(topLeadingRadius: cornerRadius, topTrailingRadius: cornerRadius))
             
             if !viewModel.isAnalyzing {
                 analyzeButton
@@ -63,11 +65,6 @@ struct AnalysisView: View {
     
     private var analysisOverlay: some View {
         ZStack {
-            // Semi-transparent background
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0.3))
-                .frame(width: 128, height: 128)
-            
             // Animated magnifying glass
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
@@ -154,7 +151,7 @@ struct AnalysisView: View {
             }
             .padding()
             .background(Color.gray.opacity(0.05))
-            .cornerRadius(12)
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .frame(minWidth: 300)
         }
     }
@@ -163,11 +160,24 @@ struct AnalysisView: View {
         Button(action: {
             viewModel.startAnalysis()
         }) {
-            Label("Start Analysis", systemImage: "play.fill")
-                .frame(maxWidth: 200)
+            HStack {
+                Spacer()
+                
+                Text("Start Analysis")
+                    .font(.title2)
+                
+                Image(systemName: "chevron.right.2")
+                    .symbolEffect(.pulse, options: .speed(1.8))
+                    .font(.system(size: 24))
+                    .bold()
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .foregroundStyle(.white)
+            .background(Color.accentColor.opacity(0.8))
+            .clipShape(.rect(bottomLeadingRadius: cornerRadius, bottomTrailingRadius: cornerRadius))
         }
-        .controlSize(.large)
-        .buttonStyle(.borderless)
+        .buttonStyle(.plain)
     }
 }
 

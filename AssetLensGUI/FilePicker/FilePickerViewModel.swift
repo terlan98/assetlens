@@ -12,28 +12,28 @@ import UniformTypeIdentifiers
 class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
     @Published var isDragOver = false
     @Published var errorMessage: String?
+    @Published var shouldShowFilePicker = false
+    
+    let allowedContentTypes = [
+        UTType(tag: "xcodeproj", tagClass: .filenameExtension, conformingTo: .compositeContent) ?? .folder,
+        UTType(tag: "xcworkspace", tagClass: .filenameExtension, conformingTo: .compositeContent) ?? .folder,
+    ]
     
     private var selectedPath: String?
     
     // MARK: - File Selection
     
-    func selectFile() {
-        let panel = NSOpenPanel()
-        panel.title = "Select Xcode Project"
-        panel.message = "Choose your .xcodeproj or .xcworkspace file"
-        panel.prompt = "Select"
-        panel.allowsMultipleSelection = false
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = true
-        panel.allowedContentTypes = [
-            UTType(filenameExtension: "xcodeproj") ?? .folder,
-            UTType(filenameExtension: "xcworkspace") ?? .folder
-        ]
-        
-        if panel.runModal() == .OK {
-            if let url = panel.url {
-                processSelectedFile(url)
-            }
+    func didTapSelectFile() {
+        shouldShowFilePicker = true
+    }
+    
+    func handleFileSelectionResult(_ result: Result<URL, any Error>) {
+        switch result {
+        case .success(let fileUrl):
+            processSelectedFile(fileUrl)
+        case .failure(let error):
+            errorMessage = "Failed to select file"
+            print("Failed to select file: \(error)")
         }
     }
     

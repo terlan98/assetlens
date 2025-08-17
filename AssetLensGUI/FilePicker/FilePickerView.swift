@@ -58,7 +58,7 @@ struct FilePickerView: View {
                 .foregroundColor(.secondary)
             
             Button("Browse Files") {
-                viewModel.selectFile()
+                viewModel.didTapSelectFile()
             }
             .buttonStyle(.borderedProminent)
         }
@@ -76,6 +76,11 @@ struct FilePickerView: View {
         ) { providers in
             viewModel.handleDrop(providers: providers)
         }
+        .fileImporter(
+            isPresented: $viewModel.shouldShowFilePicker,
+            allowedContentTypes: viewModel.allowedContentTypes,
+            onCompletion: viewModel.handleFileSelectionResult(_:)
+        )
     }
     
     private func errorSection(_ error: String) -> some View {

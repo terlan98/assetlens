@@ -47,7 +47,7 @@ struct FilePickerView: View {
                 .font(.system(size: 48))
                 .foregroundColor(viewModel.isDragOver ? .accentColor : .secondary)
             
-            Text("Drop your .xcodeproj or .xcworkspace file here")
+            Text("Drop your project folder here")
                 .font(.footnote)
                 .textCase(.uppercase)
                 .multilineTextAlignment(.center)
@@ -70,11 +70,14 @@ struct FilePickerView: View {
                 .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [10]))
                 .foregroundStyle(viewModel.isDragOver ? .accentColor : Color.secondary.opacity(0.5))
         }
-        .onDrop(
-            of: [.fileURL],
-            isTargeted: $viewModel.isDragOver
-        ) { providers in
-            viewModel.handleDrop(providers: providers)
+        .dropDestination(for: URL.self) { droppedUrls, _ in
+            if let url = droppedUrls.first {
+                viewModel.handleDrop(url)
+                return true
+            }
+            return false
+        } isTargeted: {
+            viewModel.isDragOver = $0
         }
         .fileImporter(
             isPresented: $viewModel.shouldShowFilePicker,

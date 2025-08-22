@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AppKit
+import AssetLensCore
 
 @MainActor
 class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
@@ -93,25 +94,47 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
         isAnalyzing = true
         errorMessage = nil
         
-        Task {
+        let url = URL(fileURLWithPath: selectedPath)
+        let scanner = AssetScanner()
+        let analyzer = SimilarityAnalyzer(threshold: Float(threshold))
+        
+        print("Starting analysis...")
+        print("Path: \(selectedPath)")
+        print("Threshold: \(threshold)")
+        print("Min file size: \(minFileSize) KB")
+        print("Check usage: \(shouldCheckUsage)")
+        
+        let shouldCheckUsage = self.shouldCheckUsage
+        
+        Task.detached(priority: .userInitiated) {
             do {
-                // TODO: Replace with actual AssetLensCore analysis
-                print("Starting analysis...")
-                print("Path: \(selectedPath)")
-                print("Threshold: \(threshold)")
-                print("Min file size: \(minFileSize) KB")
-                print("Check usage: \(shouldCheckUsage)")
-                
                 // Simulate analysis delay
-                try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+//                try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
                 
-                // let analyzer = AssetAnalyzer(
-                //     path: selectedPath,
-                //     threshold: Float(threshold),
-                //     minFileSize: minFileSize,
-                //     checkUsage: checkUsage
-                // )
-                // let results = try await analyzer.analyze()
+                var assets = try await scanner.scanDirectory(at: url, minSizeKB: self.minFileSize)
+                
+                guard !assets.isEmpty else {
+                    print("No image assets found at \(url.path)")
+                    return
+                }
+                
+                print("Found \(assets.count) assets to analyze")
+                
+                var unusedAssets: Set<ImageAsset> = []
+                if shouldCheckUsage {
+                    let usageAnalyzer = UsageAnalyzer()
+                    unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: .normal)
+                    
+                    // Update isUsed for ALL assets
+                    for i in assets.indices {
+                        assets[i].isUsed = !unusedAssets.contains(assets[i])
+                    }
+                }
+                
+                // Analyze similarities
+                let groups = try analyzer.findSimilarGroups(in: assets, verbosity: .normal)
+                
+                dump(groups) // TODO: remove
                 
                 await MainActor.run {
                     self.isAnalyzing = false

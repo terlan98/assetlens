@@ -51,20 +51,20 @@ struct OutputFormatter {
                     print(line)
                 }
                 
-                print("  Total size: \(formatBytes(totalSize))")
-                print("  Potential savings: \(formatBytes(potentialSavings))")
+                print("  Total size: \(totalSize.formattedAsBytes())")
+                print("  Potential savings: \(potentialSavings.formattedAsBytes())")
                 
                 // Inform the user if all assets in group are unused
                 let allUnused = group.allAssets.allSatisfy { $0.isUsed == false }
                 if allUnused {
-                    print("  💡 All assets in this group are unused - \(formatBytes(totalSize)) can be freed immediately!")
+                    print("  💡 All assets in this group are unused - \(totalSize.formattedAsBytes()) can be freed immediately!")
                 }
                 
                 print()
             }
             
             let totalSavings = groups.reduce(0) { $0 + $1.potentialSavings }
-            print("💡 Total potential savings from duplicates: \(formatBytes(totalSavings))")
+            print("💡 Total potential savings from duplicates: \(totalSavings.formattedAsBytes())")
         }
         
         // Unused assets section - only show if usage was checked
@@ -80,11 +80,11 @@ struct OutputFormatter {
             if !unusedStandalone.isEmpty {
                 print("Unused standalone assets (safe to delete):")
                 for asset in unusedStandalone.sorted(by: { $0.displayName < $1.displayName }) {
-                    print("  • \(asset.displayName) (\(formatBytes(asset.fileSize)))")
+                    print("  • \(asset.displayName) (\(asset.fileSize.formattedAsBytes()))")
                 }
                 
                 let standaloneSize = unusedStandalone.reduce(0) { $0 + $1.fileSize }
-                print("  Total: \(formatBytes(standaloneSize))")
+                print("  Total: \(standaloneSize.formattedAsBytes())")
             }
             
             if !unusedInGroups.isEmpty && verbosity >= .verbose {
@@ -95,7 +95,7 @@ struct OutputFormatter {
             }
             
             let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }
-            print("\n🎯 Total space used by unused assets: \(formatBytes(totalUnusedSize))")
+            print("\n🎯 Total space used by unused assets: \(totalUnusedSize.formattedAsBytes())")
         }
     }
     
@@ -177,9 +177,9 @@ struct OutputFormatter {
         
         // Summary
         if !groups.isEmpty || !unusedAssets.isEmpty {
-            let totalSavings = groups.reduce(0) { $0 + $1.potentialSavings }
-            let unusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }
-            print("warning: Found \(groups.count) groups of similar assets (\(formatBytes(totalSavings))) and \(unusedAssets.count) unused assets (\(formatBytes(unusedSize)))")
+            let totalSavings = groups.reduce(0) { $0 + $1.potentialSavings }.formattedAsBytes()
+            let unusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }.formattedAsBytes()
+            print("warning: Found \(groups.count) groups of similar assets (\(totalSavings)) and \(unusedAssets.count) unused assets (\(unusedSize))")
         }
     }
     
@@ -209,11 +209,5 @@ struct OutputFormatter {
         
         // Fallback to display name
         return asset.displayName
-    }
-    
-    private func formatBytes(_ bytes: Int64) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: bytes)
     }
 }

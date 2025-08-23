@@ -138,6 +138,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 
                 await MainActor.run {
                     self.isAnalyzing = false
+                    Router.shared.push(Route.groups(viewModel: .init(similarityGroups: groups)))
                 }
                 
             } catch {

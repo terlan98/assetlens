@@ -18,9 +18,13 @@ class Router: ObservableObject {
     }
     
     func destination(for route: Route) -> some View {
-        switch route {
-        case .analysis(let viewModel):
-            AnalysisView(viewModel)
+        Group {
+            switch route {
+            case .analysis(let viewModel):
+                AnalysisView(viewModel)
+            case .groups(let viewModel):
+                GroupsView(viewModel)
+            }
         }
     }
 }

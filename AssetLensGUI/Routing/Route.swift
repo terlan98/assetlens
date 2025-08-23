@@ -7,6 +7,7 @@
 
 enum Route: Hashable {
     case analysis(viewModel: AnalysisViewModel)
+    case groups(viewModel: GroupsViewModel)
     
     var id: String { String(describing: self) }
     

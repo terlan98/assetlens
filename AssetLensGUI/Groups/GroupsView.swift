@@ -36,18 +36,7 @@ struct GroupsView: View {
                 ) {
                     ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
                         VStack(spacing: 12) {
-                            VStack(spacing: .zero) {
-                                Text("GROUP #\(index + 1)")
-                                    .font(.footnote)
-                                    .bold()
-                                    .foregroundStyle(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                Text("\(group.totalSize.formattedAsBytes())")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
+                            groupNameAndSizeText(for: group, at: index)
                             
                             AssetImageView(asset: group.primary, size: Constants.imageSize)
                                 .scaledToFit()
@@ -55,12 +44,9 @@ struct GroupsView: View {
                                 .clipShape(.rect(cornerRadius: Constants.groupCornerRadius))
                             
                             VStack(spacing: .zero) {
-                                Text("^[\(group.similar.count) similar asset](inflect: true)")
-                                    .foregroundStyle(.secondary)
-                                    .textCase(.uppercase)
-                                    .font(.caption)
+                                similarAssetCountText(for: group)
                                 
-                                if group.unusedAssets.count > 0 {
+                                if !group.unusedAssets.isEmpty {
                                     unusedAssetsText(for: group)
                                 }
                             }
@@ -91,6 +77,28 @@ struct GroupsView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding([.horizontal, .top])
             .font(.title)
+    }
+    
+    private func groupNameAndSizeText(for group: SimilarityGroup, at index: Int) -> some View {
+        VStack(spacing: .zero) {
+            Text("GROUP #\(index + 1)")
+                .font(.footnote)
+                .bold()
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Text("\(group.totalSize.formattedAsBytes())")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+    
+    private func similarAssetCountText(for group: SimilarityGroup) -> some View {
+        Text("^[\(group.similar.count) similar asset](inflect: true)")
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+            .font(.caption)
     }
     
     private func strokeColor(for group: SimilarityGroup) -> Color {

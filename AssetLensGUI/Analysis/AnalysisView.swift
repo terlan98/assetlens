@@ -46,6 +46,7 @@ struct AnalysisView: View {
         .onAppear {
             viewModel.loadAppIcon()
         }
+        .navigationTitle("Analysis")
     }
     
     // MARK: - View Components

@@ -23,63 +23,74 @@ struct GroupsView: View {
     }
     
     var body: some View {
-        ScrollView {
-            LazyVGrid(
-                columns: [
-                    GridItem(.adaptive(minimum: Constants.groupMinWidth), spacing: 20, alignment: .top)
-                ],
-                alignment: .leading,
-                spacing: 20
-            ) {
-                ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
-                    VStack(spacing: 14) {
-                        VStack(spacing: .zero) {
-                            Text("GROUP #\(index + 1)")
-                                .font(.footnote)
-                                .bold()
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: .zero) {
+            title
+            
+            ScrollView {
+                LazyVGrid(
+                    columns: [
+                        GridItem(.adaptive(minimum: Constants.groupMinWidth), spacing: 20, alignment: .top)
+                    ],
+                    alignment: .leading,
+                    spacing: 20
+                ) {
+                    ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
+                        VStack(spacing: 12) {
+                            VStack(spacing: .zero) {
+                                Text("GROUP #\(index + 1)")
+                                    .font(.footnote)
+                                    .bold()
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                Text("\(group.totalSize.formattedAsBytes())")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
                             
-                            Text("\(group.totalSize.formattedAsBytes())")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        
-                        AsyncImage(url: group.primary.url) { asyncImageResult in // TODO: fix PDF rendering
-                            asyncImageResult.image?
-                                .resizable()
+                            AssetImageView(asset: group.primary, size: Constants.imageSize)
                                 .scaledToFit()
-                                .clipShape(.rect(cornerRadius: Constants.groupCornerRadius - Constants.groupPadding))
+                                .background(.white)
+                                .clipShape(.rect(cornerRadius: Constants.groupCornerRadius))
+                            
+                            VStack(spacing: .zero) {
+                                Text("^[\(group.similar.count) similar asset](inflect: true)")
+                                    .foregroundStyle(.secondary)
+                                    .textCase(.uppercase)
+                                    .font(.caption)
+                                
+                                if group.unusedAssets.count > 0 {
+                                    unusedAssetsText(for: group)
+                                }
+                            }
+                            
+                            if group.allUnused {
+                                deleteAllButton(for: group)
+                            }
                         }
-                        .frame(width: Constants.imageSize, height: Constants.imageSize)
-                        
-                        Text("\(group.similar.count) similar assets")
-                            .foregroundStyle(.secondary)
-                            .textCase(.uppercase)
-                            .font(.caption)
-                        
-                        if group.unusedAssets.count > 0 {
-                            unusedAssetsText(for: group)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(Constants.groupPadding)
+                        .fixedSize()
+                        .background {
+                            RoundedRectangle(cornerRadius: Constants.groupCornerRadius)
+                                .fill(backgroundColor(for: group))
+                                .stroke(strokeColor(for: group), lineWidth: 1)
                         }
-                        
-                        if group.allUnused {
-                            deleteAllButton(for: group)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(Constants.groupPadding)
-                    .fixedSize()
-                    .background {
-                        RoundedRectangle(cornerRadius: Constants.groupCornerRadius)
-                            .fill(backgroundColor(for: group))
-                            .stroke(strokeColor(for: group), lineWidth: 1)
                     }
                 }
+                .padding()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .padding()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .navigationTitle("Groups")
+    }
+    
+    private var title: some View {
+        Text("^[\(viewModel.similarityGroups.count) similarity group](inflect: true) were found")
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding([.horizontal, .top])
+            .font(.title)
     }
     
     private func strokeColor(for group: SimilarityGroup) -> Color {
@@ -126,7 +137,7 @@ struct GroupsView: View {
     GroupsView(
         .init(similarityGroups: (1...20).map { _ in
             SimilarityGroup(
-                primary: ImageAsset(url: mockImageUrl, isUsed: Bool.random()), similar: (1...Int.random(in: 2...5)).map { _ in
+                primary: ImageAsset(url: mockImageUrl, isUsed: Bool.random()), similar: (1...Int.random(in: 1...5)).map { _ in
                     (ImageAsset(url: mockImageUrl, isUsed: Bool.random()), Float.random(in: 0...1))
                 }
             )

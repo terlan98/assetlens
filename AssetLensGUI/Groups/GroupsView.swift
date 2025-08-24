@@ -17,12 +17,13 @@ struct GroupsView: View {
     }
     
     @StateObject private var viewModel: GroupsViewModel
+    @State private var selectedGroup: SimilarityGroup?
     
     init(_ viewModel: @escaping @autoclosure (() -> GroupsViewModel)) {
         _viewModel = .init(wrappedValue: viewModel())
     }
     
-    var body: some View {
+    var body: some View { // TODO: handle 0 groups case
         VStack(spacing: .zero) {
             title
             
@@ -63,6 +64,7 @@ struct GroupsView: View {
                                 .fill(backgroundColor(for: group))
                                 .stroke(strokeColor(for: group), lineWidth: 1)
                         }
+                        .onTapGesture { selectedGroup = group }
                     }
                 }
                 .padding()
@@ -70,6 +72,9 @@ struct GroupsView: View {
             }
         }
         .navigationTitle("Groups")
+        .sheet(item: $selectedGroup) { group in
+            GroupDetailView(group: group)
+        }
     }
     
     private var title: some View {

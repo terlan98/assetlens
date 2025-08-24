@@ -115,15 +115,17 @@ struct GroupsView: View {
     }
     
     private func unusedAssetsText(for group: SimilarityGroup) -> some View {
-        HStack(alignment: .lastTextBaseline, spacing: 4) {
-            Text(group.unusedAssets.count.description)
+        let allUnused = group.allUnused
+        let unusedCount = group.unusedAssets.count.description
+        
+        return HStack(alignment: .lastTextBaseline, spacing: allUnused ? 2 : 4) {
+            Text(allUnused ? "ALL" : unusedCount)
                 .bold()
-                .font(.body)
+                .font(allUnused ? .caption : .body)
                 .foregroundStyle(.orange)
             
-            Text("unused")
+            Text("UNUSED")
                 .font(.caption)
-                .textCase(.uppercase)
                 .foregroundStyle(.orange)
         }
     }
@@ -132,10 +134,11 @@ struct GroupsView: View {
         Button {
             print("TODO")
         } label: {
-            Label("Delete all", systemImage: "trash.fill")
+            Label("Delete", systemImage: "trash.fill")
                 .textCase(.uppercase)
                 .font(.caption)
-                .padding(8)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
                 .foregroundStyle(.red)
                 .background(.red.opacity(0.2))
                 .clipShape(.rect(cornerRadius: Constants.groupCornerRadius / 2))

@@ -123,7 +123,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 
                 var unusedAssets: Set<ImageAsset> = []
                 if shouldCheckUsage {
-                    await asyncProgressUpdate("Checking usage of ^[\(assets.count) asset](inflect: true)")
+                    await asyncProgressUpdate("Checking usage of ^[\(assets.count) assets](inflect: true)")
                     
                     let usageAnalyzer = UsageAnalyzer()
                     unusedAssets = await usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: .normal)

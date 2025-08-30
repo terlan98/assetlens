@@ -18,22 +18,24 @@ struct GroupDetailView: View {
     let group: SimilarityGroup
     
     var body: some View {
-        ScrollView {
-            VStack {
-                closeButton
-                
-                assetInfoView(for: group.primary)
-                    .background(.secondary.opacity(0.15))
-                    .clipShape(.rect(cornerRadius: Constants.rowCornerRadius))
-                
-                ForEach(group.similar, id: \.0) { assetAndDistance in
-                    let asset = assetAndDistance.0
-                    let distance = assetAndDistance.1
-                    
-                    assetInfoView(for: asset, distance)
-                        .background(.tertiary.opacity(0.15))
+        VStack {
+            closeButton
+            
+            ScrollView {
+                VStack {
+                    assetInfoView(for: group.primary)
+                        .background(.secondary.opacity(0.15))
                         .clipShape(.rect(cornerRadius: Constants.rowCornerRadius))
-                        .padding(.horizontal)
+                    
+                    ForEach(group.similar, id: \.0) { assetAndDistance in
+                        let asset = assetAndDistance.0
+                        let distance = assetAndDistance.1
+                        
+                        assetInfoView(for: asset, distance)
+                            .background(.tertiary.opacity(0.15))
+                            .clipShape(.rect(cornerRadius: Constants.rowCornerRadius))
+                            .padding(.horizontal)
+                    }
                 }
             }
         }

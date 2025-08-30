@@ -10,9 +10,51 @@ import AssetLensCore
 
 @MainActor
 class GroupsViewModel: ObservableObject {
-    let similarityGroups: [SimilarityGroup]
+    @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
+    
+    var similarityGroups: [SimilarityGroup]
     
     init(similarityGroups: [SimilarityGroup]) {
         self.similarityGroups = similarityGroups
+    }
+    
+    func setup() { // TODO: find out why it does not work (it is initially unsorted)
+        similarityGroups = currentSortingCriterion.applied(to: similarityGroups)
+    }
+    
+    func sortGroups(accordingTo criterion: GroupSortingCriterion) {
+        guard criterion != currentSortingCriterion else { return }
+        
+        similarityGroups = criterion.applied(to: similarityGroups)
+        currentSortingCriterion = criterion
+    }
+}
+
+enum GroupSortingCriterion: CaseIterable {
+    case sizeAscending
+    case sizeDescending
+    case usedFirst
+    case unusedFirst
+    
+    var title: String {
+        switch self {
+        case .sizeAscending: "Smallest first"
+        case .sizeDescending: "Largest first"
+        case .usedFirst: "Used first"
+        case .unusedFirst: "Unused first"
+        }
+    }
+    
+    func applied(to group: [SimilarityGroup]) -> [SimilarityGroup] {
+        switch self {
+        case .sizeAscending:
+            group.sorted { $0[keyPath: \.totalSize] < $1[keyPath: \.totalSize] }
+        case .sizeDescending:
+            group.sorted { $0[keyPath: \.totalSize] > $1[keyPath: \.totalSize] }
+        case .usedFirst:
+            group.sorted { !$0.allUnused && $1.allUnused }
+        case .unusedFirst:
+            group.sorted { $0.allUnused && !$1.allUnused }
+        }
     }
 }

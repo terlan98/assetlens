@@ -25,7 +25,11 @@ struct GroupsView: View {
     
     var body: some View { // TODO: handle 0 groups case
         VStack(spacing: .zero) {
-            title
+            HStack {
+                title
+                sortButton
+            }
+            .padding([.horizontal, .top])
             
             ScrollView {
                 LazyVGrid(
@@ -67,11 +71,13 @@ struct GroupsView: View {
                         .onTapGesture { selectedGroup = group }
                     }
                 }
+                .animation(.easeInOut, value: viewModel.similarityGroups)
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
         .navigationTitle("Groups")
+        .onAppear { viewModel.setup() }
         .sheet(item: $selectedGroup) { group in
             GroupDetailView(group: group)
         }
@@ -80,8 +86,32 @@ struct GroupsView: View {
     private var title: some View {
         Text("^[\(viewModel.similarityGroups.count) similarity group](inflect: true) were found")
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding([.horizontal, .top])
             .font(.title)
+    }
+    
+    private var sortButton: some View {
+        Menu {
+            ForEach(GroupSortingCriterion.allCases, id: \.self) { criterion in
+                Button {
+                    viewModel.sortGroups(accordingTo: criterion)
+                } label: {
+                    HStack(spacing: .zero) {
+                        if viewModel.currentSortingCriterion == criterion {
+                            Image(systemName: "checkmark")
+                        }
+                        
+                        Text(criterion.title)
+                    }
+                }
+            }
+        } label: {
+            Text(viewModel.currentSortingCriterion.title.uppercased())
+                .font(.subheadline)
+                .bold()
+                .foregroundStyle(.secondary)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
     
     private func groupNameAndSizeText(for group: SimilarityGroup, at index: Int) -> some View {

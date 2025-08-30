@@ -90,7 +90,7 @@ struct AnalysisView: View {
     
     private var analysisProgressView: some View {
         ProgressView {
-            Text("Analyzing...")
+            Text(LocalizedStringKey(viewModel.analysisProgressMessage ?? "Analyzing..."))
         }
         .progressViewStyle(.linear)
     }

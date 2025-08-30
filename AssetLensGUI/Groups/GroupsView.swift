@@ -36,7 +36,7 @@ struct GroupsView: View {
                     spacing: 20
                 ) {
                     ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
-                        VStack(spacing: 12) {
+                        VStack(spacing: 12) { // TODO: use lazy?
                             groupNameAndSizeText(for: group, at: index)
                             
                             AssetImageView(asset: group.primary, size: Constants.imageSize)

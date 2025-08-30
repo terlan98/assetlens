@@ -13,12 +13,12 @@ import AssetLensCore
 class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
     let selectedPath: String
     
-    // UI State
     @Published var appIcon: NSImage?
     @Published var isAnalyzing = false
     @Published var errorMessage: String?
+    @Published var analysisProgressMessage: String?
     
-    // Analysis Settings
+    // Settings
     @Published var threshold: Double = 0.5
     @Published var minFileSize: Int = 1
     @Published var shouldCheckUsage = true
@@ -106,10 +106,11 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
         
         let shouldCheckUsage = self.shouldCheckUsage
         
-        Task.detached(priority: .userInitiated) {
-            do {
-                // Simulate analysis delay
-//                try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            
+            do {                
+                await asyncProgressUpdate("Scanning for assets...")
                 
                 var assets = try await scanner.scanDirectory(at: url, minSizeKB: self.minFileSize)
                 
@@ -122,8 +123,10 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 
                 var unusedAssets: Set<ImageAsset> = []
                 if shouldCheckUsage {
+                    await asyncProgressUpdate("Checking usage of ^[\(assets.count) asset](inflect: true)")
+                    
                     let usageAnalyzer = UsageAnalyzer()
-                    unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: .normal)
+                    unusedAssets = await usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: .normal)
                     
                     // Update isUsed for ALL assets
                     for i in assets.indices {
@@ -132,21 +135,31 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 }
                 
                 // Analyze similarities
-                let groups = try analyzer.findSimilarGroups(in: assets, verbosity: .normal)
-                
-                dump(groups) // TODO: remove
+                let groups = try analyzer.findSimilarGroups(in: assets, verbosity: .normal) { progress in
+                    Task { [weak self] in
+                        let formattedProgress = progress.formatted(.percent.precision(.fractionLength(0)))
+                        await self?.asyncProgressUpdate("Analyzing similarities (\(formattedProgress))...")
+                    }
+                }
                 
                 await MainActor.run {
                     self.isAnalyzing = false
+                    self.analysisProgressMessage = nil
                     Router.shared.push(Route.groups(viewModel: .init(similarityGroups: groups)))
                 }
-                
             } catch {
                 await MainActor.run {
                     self.isAnalyzing = false
+                    self.analysisProgressMessage = nil
                     self.errorMessage = error.localizedDescription
                 }
             }
+        }
+    }
+    
+    private func asyncProgressUpdate(_ message: String) async {
+        await MainActor.run {
+            self.analysisProgressMessage = message
         }
     }
 }

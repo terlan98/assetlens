@@ -10,7 +10,8 @@ import ArgumentParser
 import AssetLensCore
 
 // MARK: - Command Line Interface
-struct AssetLens: ParsableCommand {
+@main
+struct AssetLens: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "assetlens",
         abstract: "Find visually similar assets in Xcode projects",
@@ -38,7 +39,7 @@ struct AssetLens: ParsableCommand {
     @Flag(name: .shortAndLong, help: "Check for unused assets")
     var usageCheck = false
     
-    mutating func run() throws {
+    mutating func run() async throws {
         let scanner = AssetScanner()
         let analyzer = SimilarityAnalyzer(threshold: threshold)
         
@@ -68,9 +69,9 @@ struct AssetLens: ParsableCommand {
         var unusedAssets: Set<ImageAsset> = []
         if usageCheck {
             let usageAnalyzer = UsageAnalyzer()
-            unusedAssets = usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: verbosity)
+            unusedAssets = await usageAnalyzer.findUnusedAssets(assets: assets, in: url, verbosity: verbosity)
             
-            // Update isUsed for ALL assets
+            // Update isUsed for all assets
             for i in assets.indices {
                 assets[i].isUsed = !unusedAssets.contains(assets[i])
             }
@@ -91,6 +92,3 @@ struct AssetLens: ParsableCommand {
 }
 
 extension VerbosityLevel: @retroactive ExpressibleByArgument {}
-
-// MARK: - Main Entry Point
-AssetLens.main()

@@ -54,20 +54,28 @@ struct GroupDetailView: View {
     }
     
     // TODO: add delete button
-    // TODO: add Show in Finder button
     private func assetInfoView(for asset: ImageAsset, _ distance: Float? = nil) -> some View {
         HStack(spacing: 14) {
-            AssetImageView(asset: asset, size: Constants.imageSize)
+            VStack {
+                AssetImageView(asset: asset, size: Constants.imageSize)
+                Text(asset.fileSize.formattedAsBytes())
+            }
             
-            Text(asset.displayName)
+            VStack(alignment: .leading) {
+                Text("NAME")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text(asset.displayName)
+            }
             
             Spacer()
             
             if asset.isUsed == false {
                 usageLabel
             }
-            
-            Text(asset.fileSize.formattedAsBytes())
+        }
+        .overlay(alignment: .topTrailing) {
+            finderButton(for: asset)
         }
         .padding()
     }
@@ -80,6 +88,16 @@ struct GroupDetailView: View {
             .background(.secondary)
             .foregroundStyle(.orange)
             .clipShape(.rect(cornerRadius: 6))
+    }
+    
+    private func finderButton(for asset: ImageAsset) -> some View {
+        Button {
+            NSWorkspace.shared.activateFileViewerSelecting([asset.url.deletingLastPathComponent()])
+        } label: {
+            Image(systemName: "folder.fill")
+                .font(.title2)
+        }
+        .buttonStyle(.plain)
     }
 }
 

@@ -13,6 +13,12 @@ class GroupsViewModel: ObservableObject {
     @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
     @Published var similarityGroups: [SimilarityGroup]
     
+    var unusedGroupsCount: Int {
+        similarityGroups.filter { $0.allUnused }.reduce(0) { partialResult, similarityGroup in
+            return partialResult + similarityGroup.unusedAssets.count
+        }
+    }
+    
     init(similarityGroups: [SimilarityGroup]) {
         self.similarityGroups = similarityGroups
     }
@@ -30,6 +36,10 @@ class GroupsViewModel: ObservableObject {
             similarityGroups = sortedGroups
             currentSortingCriterion = criterion
         }
+    }
+    
+    func deleteAllUnusedGroups() {
+        similarityGroups.filter { $0.allUnused }.forEach { deleteAll(in: $0) }
     }
     
     func deleteAll(in group: SimilarityGroup) {

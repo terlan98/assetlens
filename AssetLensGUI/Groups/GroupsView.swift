@@ -31,6 +31,8 @@ struct GroupsView: View {
             }
             .padding([.horizontal, .top])
             
+            unusedAssetsInfoBlock
+            
             ScrollView {
                 LazyVGrid(
                     columns: [
@@ -113,6 +115,32 @@ struct GroupsView: View {
         .fixedSize()
     }
     
+    @ViewBuilder
+    private var unusedAssetsInfoBlock: some View {
+        if viewModel.unusedGroupsCount > 0 {
+            HStack(spacing: 4) {
+                Text("Found ^[**\(viewModel.unusedGroupsCount)** unused groups](inflect: true) that can be safely deleted.")
+                    .foregroundStyle(.orange)
+                
+                Spacer()
+                
+                Button {
+                    viewModel.deleteAllUnusedGroups()
+                } label: {
+                    destructiveButtonLabel("DELETE ALL", systemImage: "trash.fill")
+                }
+                .buttonStyle(.plain)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(.orange.opacity(0.1))
+            .clipShape(.rect(cornerRadius: 4))
+            .padding([.horizontal, .top])
+            .padding(.bottom, 10)
+        }
+    }
+    
     private func groupNameAndSizeText(for group: SimilarityGroup, at index: Int) -> some View {
         VStack(spacing: .zero) {
             Text("GROUP #\(index + 1)")
@@ -163,16 +191,20 @@ struct GroupsView: View {
         Button {
             viewModel.deleteAll(in: group)
         } label: {
-            Label("Delete", systemImage: "trash.fill")
-                .textCase(.uppercase)
-                .font(.caption)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 6)
-                .foregroundStyle(.red)
-                .background(.red.opacity(0.2))
-                .clipShape(.rect(cornerRadius: Constants.groupCornerRadius / 2))
+            destructiveButtonLabel("Delete", systemImage: "trash.fill")
         }
         .buttonStyle(.plain)
+    }
+    
+    private func destructiveButtonLabel(_ title: String, systemImage: String) -> some View {
+        Label(title, systemImage: systemImage)
+            .textCase(.uppercase)
+            .font(.caption)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .foregroundStyle(.red)
+            .background(.red.opacity(0.2))
+            .clipShape(.rect(cornerRadius: Constants.groupCornerRadius / 2))
     }
 }
 

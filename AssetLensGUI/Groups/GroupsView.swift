@@ -71,7 +71,6 @@ struct GroupsView: View {
                         .onTapGesture { selectedGroup = group }
                     }
                 }
-                .animation(.easeInOut, value: viewModel.similarityGroups)
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }

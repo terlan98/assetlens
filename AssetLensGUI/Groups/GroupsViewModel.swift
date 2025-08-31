@@ -11,22 +11,25 @@ import AssetLensCore
 @MainActor
 class GroupsViewModel: ObservableObject {
     @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
-    
-    var similarityGroups: [SimilarityGroup]
+    @Published var similarityGroups: [SimilarityGroup]
     
     init(similarityGroups: [SimilarityGroup]) {
         self.similarityGroups = similarityGroups
     }
     
-    func setup() { // TODO: find out why it does not work (it is initially unsorted)
+    func setup() {
         similarityGroups = currentSortingCriterion.applied(to: similarityGroups)
     }
     
     func sortGroups(accordingTo criterion: GroupSortingCriterion) {
         guard criterion != currentSortingCriterion else { return }
         
-        similarityGroups = criterion.applied(to: similarityGroups)
-        currentSortingCriterion = criterion
+        let sortedGroups = criterion.applied(to: similarityGroups)
+        
+        withAnimation {
+            similarityGroups = sortedGroups
+            currentSortingCriterion = criterion
+        }
     }
 }
 

@@ -116,6 +116,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 
                 guard !assets.isEmpty else {
                     print("No image assets found at \(url.path)")
+                    await finalizeAnalysis()
                     return
                 }
                 
@@ -142,18 +143,19 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                     }
                 }
                 
-                await MainActor.run {
-                    self.isAnalyzing = false
-                    self.analysisProgressMessage = nil
-                    Router.shared.push(Route.groups(viewModel: .init(similarityGroups: groups)))
-                }
+                await finalizeAnalysis()
+                await Router.shared.push(Route.groups(viewModel: .init(similarityGroups: groups)))
             } catch {
-                await MainActor.run {
-                    self.isAnalyzing = false
-                    self.analysisProgressMessage = nil
-                    self.errorMessage = error.localizedDescription
-                }
+                await finalizeAnalysis(with: error)
             }
+        }
+    }
+    
+    private func finalizeAnalysis(with error: Error? = nil) async {
+        await MainActor.run {
+            self.isAnalyzing = false
+            self.analysisProgressMessage = nil
+            self.errorMessage = error?.localizedDescription
         }
     }
     

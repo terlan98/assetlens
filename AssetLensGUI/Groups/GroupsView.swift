@@ -161,7 +161,7 @@ struct GroupsView: View {
     
     private func deleteAllButton(for group: SimilarityGroup) -> some View {
         Button {
-            print("TODO")
+            viewModel.deleteAll(in: group)
         } label: {
             Label("Delete", systemImage: "trash.fill")
                 .textCase(.uppercase)

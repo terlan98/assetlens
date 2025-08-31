@@ -31,6 +31,27 @@ class GroupsViewModel: ObservableObject {
             currentSortingCriterion = criterion
         }
     }
+    
+    func deleteAll(in group: SimilarityGroup) {
+        let primaryAssetUrl = group.primary.url
+        
+        do {
+            let urlDeletingLastComponent = primaryAssetUrl.deletingLastPathComponent()
+            let isImageSetUrlFound = urlDeletingLastComponent.lastPathComponent.hasSuffix("imageset")
+            
+            if isImageSetUrlFound {
+                try FileManager.default.trashItem(at: urlDeletingLastComponent, resultingItemURL: nil)
+                
+                withAnimation {
+                    similarityGroups.removeAll { $0 == group }
+                }
+            } else {
+                print("Could not find imageset to delete") // TODO: show UI error
+            }
+        } catch {
+            print("Could not delete item: \(error)") // TODO: show UI error
+        }
+    }
 }
 
 enum GroupSortingCriterion: CaseIterable {

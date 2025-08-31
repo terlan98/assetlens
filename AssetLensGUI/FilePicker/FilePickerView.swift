@@ -57,7 +57,7 @@ struct FilePickerView: View {
                 .textCase(.uppercase)
                 .foregroundColor(.secondary)
             
-            Button("Browse Files") {
+            Button("Browse Files") { // TODO: remove this option (due to access issues)
                 viewModel.didTapSelectFile()
             }
             .buttonStyle(.borderedProminent)

@@ -32,7 +32,7 @@ struct GroupDetailView: View {
                     
                     ForEach(group.similar, id: \.0) { assetAndDistance in
                         let asset = assetAndDistance.0
-                        let distance = assetAndDistance.1
+                        let distance = assetAndDistance.1 // TODO: Tarlan - add to UI
                         
                         assetInfoView(for: asset)
                             .background(.tertiary.opacity(0.15))
@@ -60,28 +60,60 @@ struct GroupDetailView: View {
     
     @ViewBuilder
     private func assetInfoView(for asset: ImageAsset) -> some View {
+        if asset.isDeleted {
+            deletedAssetInfoView(for: asset)
+                .transition(.move(edge: .leading))
+        } else {
+            HStack(spacing: 14) {
+                VStack {
+                    AssetImageView(asset: asset, size: Constants.imageSize)
+                    Text(asset.fileSize.formattedAsBytes())
+                        .font(.callout)
+                }
+                
+                VStack(alignment: .leading) {
+                    Text("NAME")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    
+                    Text(asset.displayName)
+                        .font(.headline.monospaced())
+                }
+                
+                Spacer()
+                
+                if asset.isUsed == false {
+                    usageLabel
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                buttons(for: asset)
+            }
+            .padding()
+        }
+    }
+    
+    @ViewBuilder
+    private func deletedAssetInfoView(for asset: ImageAsset) -> some View {
         HStack(spacing: 14) {
-            VStack {
-                AssetImageView(asset: asset, size: Constants.imageSize)
-                Text(asset.fileSize.formattedAsBytes())
-            }
+            Image(systemName: "xmark.app")
+                .resizable()
+                .padding(8)
+                .scaledToFit()
+                .frame(width: Constants.imageSize, height: Constants.imageSize)
             
-            VStack(alignment: .leading) {
-                Text("NAME")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+            VStack {
+                Text("DELETED")
+                    .font(.largeTitle)
+                
                 Text(asset.displayName)
+                    .font(.caption.monospaced())
             }
+            .frame(maxWidth: .infinity)
             
             Spacer()
-            
-            if asset.isUsed == false {
-                usageLabel
-            }
         }
-        .overlay(alignment: .topTrailing) {
-            buttons(for: asset)
-        }
+        .foregroundStyle(.secondary)
         .padding()
     }
     

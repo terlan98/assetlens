@@ -19,9 +19,9 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
     @Published var analysisProgressMessage: String?
     
     // Settings
-    @Published var threshold: Double = 0.5
-    @Published var minFileSize: Int = 1
-    @Published var shouldCheckUsage = true
+    @AppStorage("analysisThreshold") var threshold: Double = 0.5
+    @AppStorage("analysisMinFileSize") var minFileSize: Int = 1
+    @AppStorage("analysisShouldCheckUsage") var shouldCheckUsage = true
     
     init(selectedPath: String) {
         self.selectedPath = selectedPath

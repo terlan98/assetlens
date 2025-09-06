@@ -17,6 +17,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
     @Published var isAnalyzing = false
     @Published var errorMessage: String?
     @Published var analysisProgressMessage: String?
+    @Published var isAlertShown = false
     
     // Settings
     @AppStorage("analysisThreshold") var threshold: Double = 0.5
@@ -116,7 +117,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 
                 guard !assets.isEmpty else {
                     print("No image assets found at \(url.path)")
-                    await finalizeAnalysis()
+                    await finalizeAnalysis(with: "No assets found in project")
                     return
                 }
                 
@@ -153,16 +154,17 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                     )
                 )
             } catch {
-                await finalizeAnalysis(with: error)
+                await finalizeAnalysis(with: error.localizedDescription)
             }
         }
     }
     
-    private func finalizeAnalysis(with error: Error? = nil) async {
+    private func finalizeAnalysis(with errorMessage: String? = nil) async {
         await MainActor.run {
             self.isAnalyzing = false
             self.analysisProgressMessage = nil
-            self.errorMessage = error?.localizedDescription
+            self.errorMessage = errorMessage
+            self.isAlertShown = (errorMessage != nil)
         }
     }
     

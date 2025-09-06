@@ -17,6 +17,10 @@ class Router: ObservableObject {
         path.append(route)
     }
     
+    func pop() {
+        path.removeLast()
+    }
+    
     func destination(for route: Route) -> some View {
         Group {
             switch route {

@@ -40,13 +40,20 @@ struct AnalysisView: View {
                 analyzeButton
             }
         }
+        .navigationTitle("Analysis")
         .padding(40)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut, value: viewModel.isAnalyzing)
         .onAppear {
             viewModel.loadAppIcon()
         }
-        .navigationTitle("Analysis")
+        .alert("Error", isPresented: $viewModel.isAlertShown) {
+            Button("OK") {
+                Router.shared.pop()
+            }
+        } message: {
+            Text(viewModel.errorMessage ?? "An error occurred")
+        }
     }
     
     // MARK: - View Components

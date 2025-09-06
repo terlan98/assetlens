@@ -13,7 +13,7 @@ struct GroupDetailView: View {
         static let imageSize: CGFloat = 100
         static let rowCornerRadius: CGFloat = 14
     }
-    typealias DeleteCallback = (ImageAsset) -> Void
+    typealias DeleteCallback = (DeleteSelection) -> Void
     
     let group: SimilarityGroup
     var onDelete: DeleteCallback?
@@ -23,6 +23,10 @@ struct GroupDetailView: View {
     var body: some View {
         VStack {
             closeButton
+            
+            if group.allUnused {
+                allUnusedInfoBox
+            }
             
             ScrollView {
                 VStack {
@@ -56,6 +60,25 @@ struct GroupDetailView: View {
         }
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+    
+    private var allUnusedInfoBox: some View {
+        HStack(spacing: 4) {
+            Text("All assets in this group are unused")
+                .foregroundStyle(.orange)
+            
+            Spacer()
+            
+            Button {
+                onDelete?(.group(group))
+            } label: {
+                Label("DELETE GROUP", systemImage: "trash.fill")
+            }
+            .buttonStyle(.customDestructive)
+        }
+        .frame(maxWidth: .infinity)
+        .infoBox()
+        .padding(.bottom, 10)
     }
     
     @ViewBuilder
@@ -138,7 +161,7 @@ struct GroupDetailView: View {
     private func deleteButton(for asset: ImageAsset) -> some View {
         if asset.isUsed == false {
             Button {
-                onDelete?(asset)
+                onDelete?(.asset(asset))
             } label: {
                 Image(systemName: "trash.fill")
                     .font(.title2)

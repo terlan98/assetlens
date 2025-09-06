@@ -37,22 +37,38 @@ class GroupsViewModel: ObservableObject {
         }
     }
     
+    func delete(_ selection: DeleteSelection) {
+        switch selection {
+        case .asset(let asset):
+            deleteImageSet(of: asset)
+        case .group(let group):
+            deleteAll(in: group)
+        }
+    }
+    
     func deleteAllUnusedGroups() {
         similarityGroups.filter { $0.allUnused }.forEach { deleteAll(in: $0) }
     }
     
-    func deleteAll(in group: SimilarityGroup) {
+    private func deleteAll(in group: SimilarityGroup) {
+        // Dismiss selection if needed
+        if selectedGroup == group {
+            selectedGroup = nil
+        }
+        
+        // Delete files
         for asset in group.allAssets {
             deleteImageSet(of: asset)
         }
         
+        // Update UI
         withAnimation {
             similarityGroups.removeAll { $0 == group }
         }
     }
     
     /// Deletes the imageset corresponding to the given asset and marks it as deleted
-    func deleteImageSet(of asset: ImageAsset) {
+    private func deleteImageSet(of asset: ImageAsset) {
         do {
             let urlDeletingLastComponent = asset.url.deletingLastPathComponent()
             let isImageSetUrlFound = urlDeletingLastComponent.lastPathComponent.hasSuffix("imageset")
@@ -114,4 +130,9 @@ enum GroupSortingCriterion: CaseIterable {
             group.sorted { $0.allUnused && !$1.allUnused }
         }
     }
+}
+
+enum DeleteSelection {
+    case group(SimilarityGroup)
+    case asset(ImageAsset)
 }

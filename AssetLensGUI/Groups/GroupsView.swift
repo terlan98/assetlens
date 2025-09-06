@@ -79,8 +79,8 @@ struct GroupsView: View {
         .navigationTitle("Groups")
         .onAppear { viewModel.setup() }
         .sheet(item: $viewModel.selectedGroup) { group in
-            GroupDetailView(group: group) { assetToBeDeleted in
-                viewModel.deleteImageSet(of: assetToBeDeleted)
+            GroupDetailView(group: group) { selection in
+                viewModel.delete(selection)
             }
         }
     }
@@ -120,7 +120,7 @@ struct GroupsView: View {
     private var unusedAssetsInfoBlock: some View {
         if viewModel.unusedGroupsCount > 0 {
             HStack(spacing: 4) {
-                Text("Found ^[**\(viewModel.unusedGroupsCount)** unused groups](inflect: true) that can be safely deleted.")
+                Text("Found ^[**\(viewModel.unusedGroupsCount)** unused groups](inflect: true) that can be safely deleted")
                     .foregroundStyle(.orange)
                 
                 Spacer()
@@ -128,15 +128,12 @@ struct GroupsView: View {
                 Button {
                     viewModel.deleteAllUnusedGroups()
                 } label: {
-                    destructiveButtonLabel("DELETE ALL", systemImage: "trash.fill")
+                    Label("DELETE ALL", systemImage: "trash.fill")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.customDestructive)
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(.orange.opacity(0.1))
-            .clipShape(.rect(cornerRadius: 4))
+            .infoBox()
             .padding([.horizontal, .top])
             .padding(.bottom, 10)
         }
@@ -190,22 +187,11 @@ struct GroupsView: View {
     
     private func deleteAllButton(for group: SimilarityGroup) -> some View {
         Button {
-            viewModel.deleteAll(in: group)
+            viewModel.delete(.group(group))
         } label: {
-            destructiveButtonLabel("Delete", systemImage: "trash.fill")
+            Label("Delete", systemImage: "trash.fill")
         }
-        .buttonStyle(.plain)
-    }
-    
-    private func destructiveButtonLabel(_ title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .textCase(.uppercase)
-            .font(.caption)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .foregroundStyle(.red)
-            .background(.red.opacity(0.2))
-            .clipShape(.rect(cornerRadius: Constants.groupCornerRadius / 2))
+        .buttonStyle(.customDestructive)
     }
 }
 

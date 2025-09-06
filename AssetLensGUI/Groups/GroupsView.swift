@@ -14,6 +14,7 @@ struct GroupsView: View {
         static let groupMinWidth: CGFloat = 100
         static let groupCornerRadius: CGFloat = 14
         static let groupPadding: CGFloat = 10
+        static let settingsDividerHeight: CGFloat = 14
     }
     
     @StateObject private var viewModel: GroupsViewModel
@@ -23,12 +24,13 @@ struct GroupsView: View {
     }
     
     var body: some View { // TODO: handle 0 groups case
-        VStack(spacing: .zero) {
+        VStack(spacing: 8) {
             HStack {
                 title
                 sortButton
             }
-            .padding([.horizontal, .top])
+            
+            settingsBlock
             
             unusedAssetsInfoBlock
             
@@ -72,11 +74,12 @@ struct GroupsView: View {
                         .onTapGesture { viewModel.selectedGroup = group }
                     }
                 }
-                .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .padding(.vertical, 6)
         }
         .navigationTitle("Groups")
+        .padding()
         .onAppear { viewModel.setup() }
         .sheet(item: $viewModel.selectedGroup) { group in
             GroupDetailView(group: group) { selection in
@@ -116,6 +119,26 @@ struct GroupsView: View {
         .fixedSize()
     }
     
+    private var settingsBlock: some View {
+        HStack {
+            Text("THRESHOLD: \(viewModel.usedSettings.threshold.formatted(.number.precision(.fractionLength(1))))")
+            
+            Divider()
+                .frame(maxHeight: Constants.settingsDividerHeight)
+            
+            Text("MINIMUM FILE SIZE: \(viewModel.usedSettings.minFileSize) KB")
+            
+            Divider()
+                .frame(maxHeight: Constants.settingsDividerHeight)
+            
+            Text("USAGE CHECK: \(viewModel.usedSettings.shouldCheckUsage ? "ON": "OFF")")
+            
+            Spacer()
+        }
+        .font(.caption.monospaced())
+        .foregroundStyle(.secondary)
+    }
+    
     @ViewBuilder
     private var unusedAssetsInfoBlock: some View {
         if viewModel.unusedGroupsCount > 0 {
@@ -134,7 +157,7 @@ struct GroupsView: View {
             }
             .frame(maxWidth: .infinity)
             .infoBox()
-            .padding([.horizontal, .top])
+            .padding(.top, 4)
             .padding(.bottom, 10)
         }
     }
@@ -205,7 +228,7 @@ struct GroupsView: View {
                     (ImageAsset(url: mockImageUrl, isUsed: Bool.random()), Float.random(in: 0...1))
                 }
             )
-        })
+        }, usedSettings: .init(threshold: 0.5, minFileSize: 1, shouldCheckUsage: Bool.random()))
     )
     .frame(width: 600, height: 700)
 }

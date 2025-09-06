@@ -14,12 +14,15 @@ class GroupsViewModel: ObservableObject {
     @Published var similarityGroups: [SimilarityGroup]
     @Published var selectedGroup: SimilarityGroup?
     
+    var usedSettings: AnalysisSettings
+    
     var unusedGroupsCount: Int {
         similarityGroups.count { $0.allUnused }
     }
     
-    init(similarityGroups: [SimilarityGroup]) {
+    init(similarityGroups: [SimilarityGroup], usedSettings: AnalysisSettings) {
         self.similarityGroups = similarityGroups
+        self.usedSettings = usedSettings
     }
     
     func setup() {

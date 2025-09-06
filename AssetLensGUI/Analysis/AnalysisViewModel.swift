@@ -144,7 +144,14 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 }
                 
                 await finalizeAnalysis()
-                await Router.shared.push(Route.groups(viewModel: .init(similarityGroups: groups)))
+                await Router.shared.push(
+                    Route.groups(
+                        viewModel: .init(
+                            similarityGroups: groups,
+                            usedSettings: currentSettings
+                        )
+                    )
+                )
             } catch {
                 await finalizeAnalysis(with: error)
             }
@@ -163,5 +170,17 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
         await MainActor.run {
             self.analysisProgressMessage = message
         }
+    }
+}
+
+struct AnalysisSettings {
+    let threshold: Double
+    let minFileSize: Int
+    let shouldCheckUsage: Bool
+}
+
+extension AnalysisViewModel {
+    private var currentSettings: AnalysisSettings {
+        .init(threshold: self.threshold, minFileSize: self.minFileSize, shouldCheckUsage: self.shouldCheckUsage)
     }
 }

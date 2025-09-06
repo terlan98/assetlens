@@ -106,7 +106,7 @@ struct AnalysisView: View {
                 // Threshold
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Label("Similarity Threshold", systemImage: "eye")
+                        Label("Similarity Threshold", systemImage: ImageConstants.thresholdIconSystemName)
                             .font(.headline)
                         
                         Spacer()
@@ -128,7 +128,7 @@ struct AnalysisView: View {
                 // Minimum File Size
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label("Minimum File Size", systemImage: "doc.text.magnifyingglass")
+                        Label("Minimum File Size", systemImage: ImageConstants.minFileSizeIconSystemName)
                             .font(.headline)
                         Text("Ignore files smaller than this size")
                             .font(.caption)
@@ -153,7 +153,7 @@ struct AnalysisView: View {
                 // Usage Analysis
                 Toggle(isOn: $viewModel.shouldCheckUsage) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Label("Check for Unused Assets", systemImage: "square.stack.3d.up.slash.fill")
+                        Label("Check for Unused Assets", systemImage: ImageConstants.checkUnusedAssetsIconSystemName)
                             .font(.headline)
                         
                         Text("Scan code to find assets that aren't referenced")

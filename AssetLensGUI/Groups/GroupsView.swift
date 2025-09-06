@@ -86,7 +86,7 @@ struct GroupsView: View {
     }
     
     private var title: some View {
-        Text("^[\(viewModel.similarityGroups.count) similarity group](inflect: true) were found")
+        Text("^[\(viewModel.similarityGroups.count) similarity group](inflect: true)")
             .frame(maxWidth: .infinity, alignment: .leading)
             .font(.title)
     }

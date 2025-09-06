@@ -15,9 +15,7 @@ class GroupsViewModel: ObservableObject {
     @Published var selectedGroup: SimilarityGroup?
     
     var unusedGroupsCount: Int {
-        similarityGroups.filter { $0.allUnused }.reduce(0) { partialResult, similarityGroup in
-            return partialResult + similarityGroup.unusedAssets.count
-        }
+        similarityGroups.count { $0.allUnused }
     }
     
     init(similarityGroups: [SimilarityGroup]) {
@@ -44,23 +42,12 @@ class GroupsViewModel: ObservableObject {
     }
     
     func deleteAll(in group: SimilarityGroup) {
-        let primaryAssetUrl = group.primary.url
+        for asset in group.allAssets {
+            deleteImageSet(of: asset)
+        }
         
-        do { // TODO: make sure to delete all assets, not just the primary one
-            let urlDeletingLastComponent = primaryAssetUrl.deletingLastPathComponent()
-            let isImageSetUrlFound = urlDeletingLastComponent.lastPathComponent.hasSuffix("imageset")
-            
-            if isImageSetUrlFound {
-                try FileManager.default.trashItem(at: urlDeletingLastComponent, resultingItemURL: nil)
-                
-                withAnimation {
-                    similarityGroups.removeAll { $0 == group }
-                }
-            } else {
-                print("Could not find imageset to delete") // TODO: show UI error
-            }
-        } catch {
-            print("Could not delete item: \(error)") // TODO: show UI error
+        withAnimation {
+            similarityGroups.removeAll { $0 == group }
         }
     }
     

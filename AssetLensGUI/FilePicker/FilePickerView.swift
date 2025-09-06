@@ -47,20 +47,10 @@ struct FilePickerView: View {
                 .font(.system(size: 48))
                 .foregroundColor(viewModel.isDragOver ? .accentColor : .secondary)
             
-            Text("Drop your project folder here")
-                .font(.footnote)
+            Text("Drop your XCode **project folder** here")
+                .font(.subheadline)
                 .textCase(.uppercase)
                 .multilineTextAlignment(.center)
-            
-            Text("or")
-                .font(.caption)
-                .textCase(.uppercase)
-                .foregroundColor(.secondary)
-            
-            Button("Browse Files") { // TODO: remove this option (due to access issues)
-                viewModel.didTapSelectFile()
-            }
-            .buttonStyle(.borderedProminent)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(80)
@@ -79,11 +69,6 @@ struct FilePickerView: View {
         } isTargeted: {
             viewModel.isDragOver = $0
         }
-        .fileImporter(
-            isPresented: $viewModel.shouldShowFilePicker,
-            allowedContentTypes: viewModel.allowedContentTypes,
-            onCompletion: viewModel.handleFileSelectionResult(_:)
-        )
     }
     
     private func errorSection(_ error: String) -> some View {

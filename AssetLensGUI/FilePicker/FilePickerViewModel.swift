@@ -12,51 +12,21 @@ import UniformTypeIdentifiers
 class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
     @Published var isDragOver = false
     @Published var errorMessage: String?
-    @Published var shouldShowFilePicker = false
-    
-    let allowedContentTypes = [
-        UTType.folder
-    ]
     
     private var selectedPath: String?
     
     // MARK: - Drag and Drop
+    
     func handleDrop(_ url: URL) {
-        processSelectedFile(url, shouldAccessSecurityScope: false)
-    }
-    
-    // MARK: - File Selection
-    
-    func didTapSelectFile() {
-        shouldShowFilePicker = true
-    }
-    
-    func handleFileSelectionResult(_ result: Result<URL, any Error>) {
-        switch result {
-        case .success(let fileUrl):
-            guard fileUrl.startAccessingSecurityScopedResource() else {
-                print("Failed to access security scope of URL: \(fileUrl)")
-                return
-            }
-            
-            processSelectedFile(fileUrl, shouldAccessSecurityScope: true)
-        case .failure(let error):
-            errorMessage = "Failed to select file"
-            print("Failed to select file: \(error)")
-        }
+        processSelectedFile(url)
     }
     
     // MARK: - File Processing
     
-    private func processSelectedFile(_ url: URL, shouldAccessSecurityScope: Bool) {
-        guard !shouldAccessSecurityScope || url.startAccessingSecurityScopedResource() else {
-            print("Failed to access security scope of URL: \(url)")
-            return
-        }
-        
+    private func processSelectedFile(_ url: URL) {
         let path = url.path
         
-        if url.hasDirectoryPath, assetsExist(at: url, shouldAccessSecurityScope: shouldAccessSecurityScope) {
+        if url.hasDirectoryPath, assetsExist(at: url) {
             selectedPath = path
             errorMessage = nil
             Router.shared.push(Route.analysis(viewModel: .init(selectedPath: path)))
@@ -67,18 +37,7 @@ class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
         }
     }
     
-    private func assetsExist(at url: URL, shouldAccessSecurityScope: Bool) -> Bool {
-        guard !shouldAccessSecurityScope || url.startAccessingSecurityScopedResource() else {
-            print("Failed to access security scope of URL: \(url)")
-            return false
-        }
-        
-        defer {
-            if shouldAccessSecurityScope {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
-        
+    private func assetsExist(at url: URL) -> Bool {
         let fileManager = FileManager.default
         if let enumerator = fileManager.enumerator(
             at: url,

@@ -109,6 +109,10 @@ struct GroupDetailView: View {
                     usageLabel
                 }
             }
+            .contentShape(.rect)
+            .onTapGesture(count: 2) {
+                showInFinder(asset)
+            }
             .overlay(alignment: .topTrailing) {
                 buttons(for: asset)
             }
@@ -176,12 +180,16 @@ struct GroupDetailView: View {
     
     private func finderButton(for asset: ImageAsset) -> some View {
         Button {
-            NSWorkspace.shared.activateFileViewerSelecting([asset.url.deletingLastPathComponent()])
+            showInFinder(asset)
         } label: {
             Image(systemName: "folder.fill")
                 .font(.title2)
         }
         .buttonStyle(.plain)
+    }
+    
+    private func showInFinder(_ asset: ImageAsset) {
+        NSWorkspace.shared.activateFileViewerSelecting([asset.url.deletingLastPathComponent()])
     }
 }
 

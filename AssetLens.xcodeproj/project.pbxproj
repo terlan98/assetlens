@@ -1,0 +1,486 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5270BE9A2E53B23A00FAC10B /* AssetLensCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5270BE992E53B23A00FAC10B /* AssetLensCore */; };
+		528F76EF2E50C10E00E0ED3B /* AssetLensCore in Frameworks */ = {isa = PBXBuildFile; productRef = 528F76EE2E50C10E00E0ED3B /* AssetLensCore */; };
+		52C23D6B2E50BD020076B00F /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 52C23D6A2E50BD010076B00F /* ArgumentParser */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		52C8A0712E471B79009E060B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		528F76F42E50C39500E0ED3B /* AssetLens.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AssetLens.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		52C8A0732E471B79009E060B /* AssetLensCLI */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AssetLensCLI; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		528F76F52E50C39500E0ED3B /* AssetLensGUI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AssetLensGUI;
+			sourceTree = "<group>";
+		};
+		52C8A0752E471B79009E060B /* AssetLens */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AssetLens;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		528F76F12E50C39500E0ED3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5270BE9A2E53B23A00FAC10B /* AssetLensCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52C8A0702E471B79009E060B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				528F76EF2E50C10E00E0ED3B /* AssetLensCore in Frameworks */,
+				52C23D6B2E50BD020076B00F /* ArgumentParser in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5270BE982E53B23A00FAC10B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		52C8A06A2E471B79009E060B = {
+			isa = PBXGroup;
+			children = (
+				52C8A0752E471B79009E060B /* AssetLens */,
+				528F76F52E50C39500E0ED3B /* AssetLensGUI */,
+				5270BE982E53B23A00FAC10B /* Frameworks */,
+				52C8A0742E471B79009E060B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		52C8A0742E471B79009E060B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				52C8A0732E471B79009E060B /* AssetLensCLI */,
+				528F76F42E50C39500E0ED3B /* AssetLens.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		528F76F32E50C39500E0ED3B /* AssetLensGUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 528F76FD2E50C39500E0ED3B /* Build configuration list for PBXNativeTarget "AssetLensGUI" */;
+			buildPhases = (
+				528F76F02E50C39500E0ED3B /* Sources */,
+				528F76F12E50C39500E0ED3B /* Frameworks */,
+				528F76F22E50C39500E0ED3B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				528F76F52E50C39500E0ED3B /* AssetLensGUI */,
+			);
+			name = AssetLensGUI;
+			packageProductDependencies = (
+				5270BE992E53B23A00FAC10B /* AssetLensCore */,
+			);
+			productName = AssetLensGUI;
+			productReference = 528F76F42E50C39500E0ED3B /* AssetLens.app */;
+			productType = "com.apple.product-type.application";
+		};
+		52C8A0722E471B79009E060B /* AssetLensCLI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 52C8A07A2E471B79009E060B /* Build configuration list for PBXNativeTarget "AssetLensCLI" */;
+			buildPhases = (
+				52C8A06F2E471B79009E060B /* Sources */,
+				52C8A0702E471B79009E060B /* Frameworks */,
+				52C8A0712E471B79009E060B /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				52C8A0752E471B79009E060B /* AssetLens */,
+			);
+			name = AssetLensCLI;
+			packageProductDependencies = (
+				52C23D6A2E50BD010076B00F /* ArgumentParser */,
+				528F76EE2E50C10E00E0ED3B /* AssetLensCore */,
+			);
+			productName = AssetLens;
+			productReference = 52C8A0732E471B79009E060B /* AssetLensCLI */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		52C8A06B2E471B79009E060B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					528F76F32E50C39500E0ED3B = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					52C8A0722E471B79009E060B = {
+						CreatedOnToolsVersion = 16.4;
+					};
+				};
+			};
+			buildConfigurationList = 52C8A06E2E471B79009E060B /* Build configuration list for PBXProject "AssetLens" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 52C8A06A2E471B79009E060B;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				52C23D692E50BD010076B00F /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 52C8A0742E471B79009E060B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				52C8A0722E471B79009E060B /* AssetLensCLI */,
+				528F76F32E50C39500E0ED3B /* AssetLensGUI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		528F76F22E50C39500E0ED3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		528F76F02E50C39500E0ED3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		52C8A06F2E471B79009E060B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		528F76FE2E50C39500E0ED3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = AssetLensGUI/AssetLensGUI.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AssetLens;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tarlan.AssetLensGUI;
+				PRODUCT_NAME = AssetLens;
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		528F76FF2E50C39500E0ED3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = AssetLensGUI/AssetLensGUI.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = AssetLens;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tarlan.AssetLensGUI;
+				PRODUCT_NAME = AssetLens;
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		52C8A0782E471B79009E060B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		52C8A0792E471B79009E060B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.5;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		52C8A07B2E471B79009E060B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		52C8A07C2E471B79009E060B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N422BWS4VH;
+				ENABLE_HARDENED_RUNTIME = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		528F76FD2E50C39500E0ED3B /* Build configuration list for PBXNativeTarget "AssetLensGUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				528F76FE2E50C39500E0ED3B /* Debug */,
+				528F76FF2E50C39500E0ED3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		52C8A06E2E471B79009E060B /* Build configuration list for PBXProject "AssetLens" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52C8A0782E471B79009E060B /* Debug */,
+				52C8A0792E471B79009E060B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		52C8A07A2E471B79009E060B /* Build configuration list for PBXNativeTarget "AssetLensCLI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52C8A07B2E471B79009E060B /* Debug */,
+				52C8A07C2E471B79009E060B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../AssetLensCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		52C23D692E50BD010076B00F /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5270BE992E53B23A00FAC10B /* AssetLensCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */;
+			productName = AssetLensCore;
+		};
+		528F76EE2E50C10E00E0ED3B /* AssetLensCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AssetLensCore;
+		};
+		52C23D6A2E50BD010076B00F /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 52C23D692E50BD010076B00F /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 52C8A06B2E471B79009E060B /* Project object */;
+}

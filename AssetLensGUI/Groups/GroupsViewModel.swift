@@ -12,6 +12,7 @@ import AssetLensCore
 class GroupsViewModel: ObservableObject {
     @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
     @Published var similarityGroups: [SimilarityGroup]
+    @Published var selectedGroup: SimilarityGroup?
     
     var unusedGroupsCount: Int {
         similarityGroups.filter { $0.allUnused }.reduce(0) { partialResult, similarityGroup in
@@ -45,7 +46,7 @@ class GroupsViewModel: ObservableObject {
     func deleteAll(in group: SimilarityGroup) {
         let primaryAssetUrl = group.primary.url
         
-        do {
+        do { // TODO: make sure to delete all assets, not just the primary one
             let urlDeletingLastComponent = primaryAssetUrl.deletingLastPathComponent()
             let isImageSetUrlFound = urlDeletingLastComponent.lastPathComponent.hasSuffix("imageset")
             
@@ -54,6 +55,41 @@ class GroupsViewModel: ObservableObject {
                 
                 withAnimation {
                     similarityGroups.removeAll { $0 == group }
+                }
+            } else {
+                print("Could not find imageset to delete") // TODO: show UI error
+            }
+        } catch {
+            print("Could not delete item: \(error)") // TODO: show UI error
+        }
+    }
+    
+    /// Deletes the imageset corresponding to the given asset and marks it as deleted
+    func deleteImageSet(of asset: ImageAsset) {
+        do {
+            let urlDeletingLastComponent = asset.url.deletingLastPathComponent()
+            let isImageSetUrlFound = urlDeletingLastComponent.lastPathComponent.hasSuffix("imageset")
+            
+            if isImageSetUrlFound,
+               let indexOfGroupContainingAsset = similarityGroups.firstIndex(where: { $0.allAssets.contains(asset) }) {
+                try FileManager.default.trashItem(at: urlDeletingLastComponent, resultingItemURL: nil)
+                
+                var assetCopy = asset
+                assetCopy.isDeleted = true
+                
+                let groupContainingAsset = similarityGroups[indexOfGroupContainingAsset]
+                
+                withAnimation {
+                    if groupContainingAsset.primary == asset { // deleted primary
+                        similarityGroups[indexOfGroupContainingAsset].primary = assetCopy
+                    } else if let indexOfSimilarInGroup = groupContainingAsset.similar.firstIndex(where: { $0.0 == asset }) { // deleted non-primary
+                        let existingDistance = similarityGroups[indexOfGroupContainingAsset].similar[indexOfSimilarInGroup].1
+                        similarityGroups[indexOfGroupContainingAsset].similar[indexOfSimilarInGroup] = (assetCopy, existingDistance)
+                    }
+                    
+                    if selectedGroup == groupContainingAsset {
+                        selectedGroup = similarityGroups[indexOfGroupContainingAsset]
+                    }
                 }
             } else {
                 print("Could not find imageset to delete") // TODO: show UI error

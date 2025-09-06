@@ -17,7 +17,6 @@ struct GroupsView: View {
     }
     
     @StateObject private var viewModel: GroupsViewModel
-    @State private var selectedGroup: SimilarityGroup?
     
     init(_ viewModel: @escaping @autoclosure (() -> GroupsViewModel)) {
         _viewModel = .init(wrappedValue: viewModel())
@@ -70,7 +69,7 @@ struct GroupsView: View {
                                 .fill(backgroundColor(for: group))
                                 .stroke(strokeColor(for: group), lineWidth: 1)
                         }
-                        .onTapGesture { selectedGroup = group }
+                        .onTapGesture { viewModel.selectedGroup = group }
                     }
                 }
                 .padding()
@@ -79,8 +78,10 @@ struct GroupsView: View {
         }
         .navigationTitle("Groups")
         .onAppear { viewModel.setup() }
-        .sheet(item: $selectedGroup) { group in
-            GroupDetailView(group: group)
+        .sheet(item: $viewModel.selectedGroup) { group in
+            GroupDetailView(group: group) { assetToBeDeleted in
+                viewModel.deleteImageSet(of: assetToBeDeleted)
+            }
         }
     }
     

@@ -13,9 +13,12 @@ struct GroupDetailView: View {
         static let imageSize: CGFloat = 100
         static let rowCornerRadius: CGFloat = 14
     }
+    typealias DeleteCallback = (ImageAsset) -> Void
+    
+    let group: SimilarityGroup
+    var onDelete: DeleteCallback?
     
     @Environment(\.dismiss) private var dismiss
-    let group: SimilarityGroup
     
     var body: some View {
         VStack {
@@ -31,7 +34,7 @@ struct GroupDetailView: View {
                         let asset = assetAndDistance.0
                         let distance = assetAndDistance.1
                         
-                        assetInfoView(for: asset, distance)
+                        assetInfoView(for: asset)
                             .background(.tertiary.opacity(0.15))
                             .clipShape(.rect(cornerRadius: Constants.rowCornerRadius))
                             .padding(.horizontal)
@@ -55,8 +58,8 @@ struct GroupDetailView: View {
         .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
-    // TODO: add delete button
-    private func assetInfoView(for asset: ImageAsset, _ distance: Float? = nil) -> some View {
+    @ViewBuilder
+    private func assetInfoView(for asset: ImageAsset) -> some View {
         HStack(spacing: 14) {
             VStack {
                 AssetImageView(asset: asset, size: Constants.imageSize)
@@ -77,7 +80,7 @@ struct GroupDetailView: View {
             }
         }
         .overlay(alignment: .topTrailing) {
-            finderButton(for: asset)
+            buttons(for: asset)
         }
         .padding()
     }
@@ -90,6 +93,30 @@ struct GroupDetailView: View {
             .background(.secondary)
             .foregroundStyle(.orange)
             .clipShape(.rect(cornerRadius: 6))
+    }
+    
+    private func buttons(for asset: ImageAsset) -> some View {
+        HStack {
+            deleteButton(for: asset)
+            finderButton(for: asset)
+        }
+    }
+    
+    @ViewBuilder
+    private func deleteButton(for asset: ImageAsset) -> some View {
+        if asset.isUsed == false {
+            Button {
+                onDelete?(asset)
+            } label: {
+                Image(systemName: "trash.fill")
+                    .font(.title2)
+                    .foregroundStyle(.red.opacity(0.8))
+            }
+            .buttonStyle(.plain)
+            
+            Divider()
+                .frame(maxHeight: 20)
+        }
     }
     
     private func finderButton(for asset: ImageAsset) -> some View {

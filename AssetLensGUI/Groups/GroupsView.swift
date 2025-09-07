@@ -23,60 +23,15 @@ struct GroupsView: View {
         _viewModel = .init(wrappedValue: viewModel())
     }
     
-    var body: some View { // TODO: handle 0 groups case
+    var body: some View {
         VStack(spacing: 8) {
-            HStack {
-                title
-                sortButton
-            }
+            topBarView
             
             settingsBlock
             
             unusedAssetsInfoBlock
             
-            ScrollView {
-                LazyVGrid(
-                    columns: [
-                        GridItem(.adaptive(minimum: Constants.groupMinWidth), spacing: 20, alignment: .top)
-                    ],
-                    alignment: .leading,
-                    spacing: 20
-                ) {
-                    ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
-                        VStack(spacing: 12) {
-                            groupNameAndSizeText(for: group, at: index)
-                            
-                            AssetImageView(asset: group.primary, size: Constants.imageSize)
-                                .scaledToFit()
-                                .background(.white)
-                                .clipShape(.rect(cornerRadius: Constants.groupCornerRadius))
-                            
-                            VStack(spacing: .zero) {
-                                similarAssetCountText(for: group)
-                                
-                                if !group.unusedAssets.isEmpty {
-                                    unusedAssetsText(for: group)
-                                }
-                            }
-                            
-                            if group.allUnused {
-                                deleteAllButton(for: group)
-                            }
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .padding(Constants.groupPadding)
-                        .fixedSize()
-                        .background {
-                            RoundedRectangle(cornerRadius: Constants.groupCornerRadius)
-                                .fill(backgroundColor(for: group))
-                                .stroke(strokeColor(for: group), lineWidth: 1)
-                        }
-                        .onTapGesture { viewModel.selectedGroup = group }
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .padding(.vertical, 6)
+            groupsGridView
         }
         .navigationTitle("Groups")
         .padding()
@@ -84,6 +39,16 @@ struct GroupsView: View {
         .sheet(item: $viewModel.selectedGroup) { group in
             GroupDetailView(group: group) { selection in
                 viewModel.delete(selection)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var topBarView: some View {
+        if !viewModel.similarityGroups.isEmpty {
+            HStack {
+                title
+                sortButton
             }
         }
     }
@@ -160,6 +125,82 @@ struct GroupsView: View {
             .padding(.top, 4)
             .padding(.bottom, 10)
         }
+    }
+    
+    @ViewBuilder
+    private var groupsGridView: some View {
+        if viewModel.similarityGroups.isEmpty {
+            noGroupsMessageView
+        } else {
+            ScrollView {
+                LazyVGrid(
+                    columns: [
+                        GridItem(.adaptive(minimum: Constants.groupMinWidth), spacing: 20, alignment: .top)
+                    ],
+                    alignment: .leading,
+                    spacing: 20
+                ) {
+                    ForEach(Array(viewModel.similarityGroups.enumerated()), id: \.element) { index, group in
+                        VStack(spacing: 12) {
+                            groupNameAndSizeText(for: group, at: index)
+                            
+                            AssetImageView(asset: group.primary, size: Constants.imageSize)
+                                .scaledToFit()
+                                .background(.white)
+                                .clipShape(.rect(cornerRadius: Constants.groupCornerRadius))
+                            
+                            VStack(spacing: .zero) {
+                                similarAssetCountText(for: group)
+                                
+                                if !group.unusedAssets.isEmpty {
+                                    unusedAssetsText(for: group)
+                                }
+                            }
+                            
+                            if group.allUnused {
+                                deleteAllButton(for: group)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(Constants.groupPadding)
+                        .fixedSize()
+                        .background {
+                            RoundedRectangle(cornerRadius: Constants.groupCornerRadius)
+                                .fill(backgroundColor(for: group))
+                                .stroke(strokeColor(for: group), lineWidth: 1)
+                        }
+                        .onTapGesture { viewModel.selectedGroup = group }
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+            .padding(.vertical, 6)
+        }
+    }
+    
+    @ViewBuilder
+    private var noGroupsMessageView: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "medal.fill")
+                .foregroundStyle(.yellow)
+                .font(.system(size: 40))
+            
+            VStack(spacing: 8) {
+                Text("PERFECT!")
+                    .font(.body.bold().monospaced())
+                
+                Text("""
+                    All assets are unique
+                    Your project has no visual redundancy
+                    """)
+                .font(.callout)
+                .textCase(.uppercase)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .animation(.easeInOut, value: viewModel.similarityGroups)
     }
     
     private func groupNameAndSizeText(for group: SimilarityGroup, at index: Int) -> some View {

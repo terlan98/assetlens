@@ -54,7 +54,7 @@ struct AssetLens: AsyncParsableCommand {
             print("Scanning \(url.path)...")
         }
         
-        var assets = try scanner.scanDirectory(at: url, minSizeKB: minSize)
+        var assets = try await scanner.scanDirectory(at: url, minSizeKB: minSize)
         
         guard !assets.isEmpty else {
             print("No image assets found at \(url.path)")
@@ -78,7 +78,7 @@ struct AssetLens: AsyncParsableCommand {
         }
         
         // Analyze similarities
-        let groups = try analyzer.findSimilarGroups(in: assets)
+        let groups = try await analyzer.findSimilarGroups(in: assets)
         
         // Output results
         let formatter = OutputFormatter(format: format, verbosity: verbosity)

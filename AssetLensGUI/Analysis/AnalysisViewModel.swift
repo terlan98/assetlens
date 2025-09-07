@@ -107,7 +107,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
         
         let shouldCheckUsage = self.shouldCheckUsage
         
-        Task.detached(priority: .userInitiated) { [weak self] in
+        Task { [weak self] in
             guard let self else { return }
             
             do {                
@@ -145,7 +145,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 }
                 
                 await finalizeAnalysis()
-                await Router.shared.push(
+                Router.shared.push(
                     Route.groups(
                         viewModel: .init(
                             similarityGroups: groups,

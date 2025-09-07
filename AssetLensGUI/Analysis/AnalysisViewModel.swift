@@ -137,7 +137,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 }
                 
                 // Analyze similarities
-                let groups = try analyzer.findSimilarGroups(in: assets, verbosity: .normal) { progress in
+                let groups = try await analyzer.findSimilarGroups(in: assets) { progress in
                     Task { [weak self] in
                         let formattedProgress = progress.formatted(.percent.precision(.fractionLength(0)))
                         await self?.asyncProgressUpdate("Analyzing similarities (\(formattedProgress))...")

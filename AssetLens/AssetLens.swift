@@ -41,7 +41,7 @@ struct AssetLens: AsyncParsableCommand {
     
     mutating func run() async throws {
         let scanner = AssetScanner()
-        let analyzer = SimilarityAnalyzer(threshold: threshold)
+        let analyzer = SimilarityAnalyzer(threshold: threshold, verbosity: verbosity)
         
         // Expand path
         let expandedPath = NSString(string: projectPath).expandingTildeInPath
@@ -78,7 +78,7 @@ struct AssetLens: AsyncParsableCommand {
         }
         
         // Analyze similarities
-        let groups = try analyzer.findSimilarGroups(in: assets, verbosity: verbosity)
+        let groups = try analyzer.findSimilarGroups(in: assets)
         
         // Output results
         let formatter = OutputFormatter(format: format, verbosity: verbosity)

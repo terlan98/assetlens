@@ -36,9 +36,9 @@ struct GroupDetailView: View {
                     
                     ForEach(group.similar, id: \.0) { assetAndDistance in
                         let asset = assetAndDistance.0
-                        let distance = assetAndDistance.1 // TODO: Tarlan - add to UI
+                        let distance = assetAndDistance.1
                         
-                        assetInfoView(for: asset)
+                        assetInfoView(for: asset, distance: distance)
                             .background(.tertiary.opacity(0.15))
                             .clipShape(.rect(cornerRadius: Constants.rowCornerRadius))
                             .padding(.horizontal)
@@ -82,7 +82,7 @@ struct GroupDetailView: View {
     }
     
     @ViewBuilder
-    private func assetInfoView(for asset: ImageAsset) -> some View {
+    private func assetInfoView(for asset: ImageAsset, distance: Float? = nil) -> some View {
         if asset.isDeleted {
             deletedAssetInfoView(for: asset)
                 .transition(.move(edge: .leading))
@@ -94,13 +94,26 @@ struct GroupDetailView: View {
                         .font(.callout)
                 }
                 
-                VStack(alignment: .leading) {
-                    Text("NAME")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading) {
+                        Text("NAME")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                        
+                        Text(asset.displayName)
+                            .font(.headline.monospaced())
+                    }
                     
-                    Text(asset.displayName)
-                        .font(.headline.monospaced())
+                    if let distance {
+                        VStack(alignment: .leading) {
+                            Text("DISTANCE")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                            
+                            Text(distance.formatted(.number.precision(.fractionLength(2))))
+                                .font(.headline.monospaced())
+                        }
+                    }
                 }
                 
                 Spacer()

@@ -90,7 +90,7 @@ struct GroupDetailView: View {
             HStack(spacing: 14) {
                 VStack {
                     AssetImageView(asset: asset, size: Constants.imageSize)
-                    Text(asset.fileSize.formattedAsBytes())
+                    Text(asset.imageSetSize.formattedAsBytes())
                         .font(.callout)
                 }
                 

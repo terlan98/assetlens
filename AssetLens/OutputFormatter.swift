@@ -80,10 +80,10 @@ struct OutputFormatter {
             if !unusedStandalone.isEmpty {
                 print("Unused standalone assets (safe to delete):")
                 for asset in unusedStandalone.sorted(by: { $0.displayName < $1.displayName }) {
-                    print("  • \(asset.displayName) (\(asset.fileSize.formattedAsBytes()))")
+                    print("  • \(asset.displayName) (\(asset.imageSetSize.formattedAsBytes()))")
                 }
                 
-                let standaloneSize = unusedStandalone.reduce(0) { $0 + $1.fileSize }
+                let standaloneSize = unusedStandalone.reduce(0) { $0 + $1.imageSetSize }
                 print("  Total: \(standaloneSize.formattedAsBytes())")
             }
             
@@ -94,7 +94,7 @@ struct OutputFormatter {
                 }
             }
             
-            let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }
+            let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.imageSetSize }
             print("\n🎯 Total space used by unused assets: \(totalUnusedSize.formattedAsBytes())")
         }
     }
@@ -131,14 +131,14 @@ struct OutputFormatter {
                 [
                     "name": asset.displayName,
                     "path": formatAssetPath(asset, from: baseURL),
-                    "size": asset.fileSize
+                    "size": asset.imageSetSize
                 ]
             }
         }
         
         // Summary
         let totalDuplicateSavings = groups.reduce(0) { $0 + $1.potentialSavings }
-        let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }
+        let totalUnusedSize = unusedAssets.reduce(0) { $0 + $1.imageSetSize }
         let usageChecked = allAssets.first?.isUsed != nil
         
         output["summary"] = [
@@ -178,7 +178,7 @@ struct OutputFormatter {
         // Summary
         if !groups.isEmpty || !unusedAssets.isEmpty {
             let totalSavings = groups.reduce(0) { $0 + $1.potentialSavings }.formattedAsBytes()
-            let unusedSize = unusedAssets.reduce(0) { $0 + $1.fileSize }.formattedAsBytes()
+            let unusedSize = unusedAssets.reduce(0) { $0 + $1.imageSetSize }.formattedAsBytes()
             print("warning: Found \(groups.count) groups of similar assets (\(totalSavings)) and \(unusedAssets.count) unused assets (\(unusedSize))")
         }
     }

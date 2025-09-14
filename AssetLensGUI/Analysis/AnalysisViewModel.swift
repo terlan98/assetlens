@@ -8,9 +8,10 @@
 import SwiftUI
 import AppKit
 import AssetLensCore
+import OSLog
 
 @MainActor
-class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
+class AnalysisViewModel: ObservableObject {
     let selectedPath: String
     
     @Published var appIcon: NSImage?
@@ -23,6 +24,8 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
     @AppStorage("analysisThreshold") var threshold: Double = 0.5
     @AppStorage("analysisMinFileSize") var minFileSize: Int = 1
     @AppStorage("analysisShouldCheckUsage") var shouldCheckUsage = true
+    
+    private lazy var logger = Logger(for: Self.self)
     
     init(selectedPath: String) {
         self.selectedPath = selectedPath
@@ -74,7 +77,7 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 return NSImage(contentsOf: largestIcon)
             }
         } catch {
-            print("Error loading app icon: \(error)")
+            logger.error("Error loading app icon: \(error)")
         }
         
         return nil
@@ -99,11 +102,15 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
         let scanner = AssetScanner()
         let analyzer = SimilarityAnalyzer(threshold: Float(threshold))
         
-        print("Starting analysis...")
-        print("Path: \(selectedPath)")
-        print("Threshold: \(threshold)")
-        print("Min file size: \(minFileSize) KB")
-        print("Check usage: \(shouldCheckUsage)")
+        logger.info(
+            """
+            Starting analysis...
+            Path: \(self.selectedPath)
+            Threshold: \(self.threshold)
+            Min file size: \(self.minFileSize) KB
+            Check usage: \(self.shouldCheckUsage)
+            """
+        )
         
         let shouldCheckUsage = self.shouldCheckUsage
         
@@ -116,12 +123,12 @@ class AnalysisViewModel: ObservableObject { // TODO: replace prints with logs
                 var assets = try await scanner.scanDirectory(at: url, minSizeKB: self.minFileSize)
                 
                 guard !assets.isEmpty else {
-                    print("No image assets found at \(url.path)")
+                    logger.error("No image assets found at \(url.path)")
                     await finalizeAnalysis(with: "No assets found in project")
                     return
                 }
                 
-                print("Found \(assets.count) assets to analyze")
+                logger.info("Found \(assets.count) assets to analyze")
                 
                 var unusedAssets: Set<ImageAsset> = []
                 if shouldCheckUsage {

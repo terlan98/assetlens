@@ -111,13 +111,17 @@ enum GroupSortingCriterion: CaseIterable {
     case sizeDescending
     case usedFirst
     case unusedFirst
+    case countAscending
+    case countDescending
     
     var title: String {
         switch self {
-        case .sizeAscending: "Smallest first"
-        case .sizeDescending: "Largest first"
+        case .sizeAscending: "Smallest first (KB)"
+        case .sizeDescending: "Largest first (KB)"
         case .usedFirst: "Used first"
         case .unusedFirst: "Unused first"
+        case .countAscending: "Smallest first"
+        case .countDescending: "Largest first"
         }
     }
     
@@ -131,6 +135,10 @@ enum GroupSortingCriterion: CaseIterable {
             group.sorted { !$0.allUnused && $1.allUnused }
         case .unusedFirst:
             group.sorted { $0.allUnused && !$1.allUnused }
+        case .countAscending:
+            group.sorted { $0[keyPath: \.similar.count] < $1[keyPath: \.similar.count] }
+        case .countDescending:
+            group.sorted { $0[keyPath: \.similar.count] > $1[keyPath: \.similar.count] }
         }
     }
 }

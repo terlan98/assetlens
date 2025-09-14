@@ -81,6 +81,7 @@ struct GroupsView: View {
                 .foregroundStyle(.secondary)
         }
         .menuStyle(.borderlessButton)
+        .tint(.secondary)
         .fixedSize()
     }
     

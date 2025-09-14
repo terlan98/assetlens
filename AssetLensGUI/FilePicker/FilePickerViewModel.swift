@@ -5,15 +5,17 @@
 //  Created by Tarlan Ismayilsoy on 16.08.25.
 //
 
+import OSLog
 import SwiftUI
 import UniformTypeIdentifiers
 
 @MainActor
-class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
+class FilePickerViewModel: ObservableObject {
     @Published var isDragOver = false
     @Published var errorMessage: String?
     
     private var selectedPath: String?
+    private lazy var logger = Logger(for: Self.self)
     
     // MARK: - Drag and Drop
     
@@ -30,10 +32,13 @@ class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
             selectedPath = path
             errorMessage = nil
             Router.shared.push(Route.analysis(viewModel: .init(selectedPath: path)))
-            print("Selected directory: \(path)")
+            
+            logger.info("Selected directory: \(path)")
         } else {
             errorMessage = "Selected folder doesn't contain an Xcode project"
             selectedPath = nil
+            
+            logger.warning("No Xcode project found in \(path)")
         }
     }
     
@@ -43,8 +48,8 @@ class FilePickerViewModel: ObservableObject { // TODO: replace prints with logs
             at: url,
             includingPropertiesForKeys: nil,
             options: [.skipsHiddenFiles],
-            errorHandler: { url, error in
-                print("Error while enumerating files: \(error)")
+            errorHandler: { [weak self] url, error in
+                self?.logger.error("Error while enumerating files: \(error)")
                 return false
             }
         ) {

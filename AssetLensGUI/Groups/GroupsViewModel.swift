@@ -5,6 +5,7 @@
 //  Created by Tarlan Ismayilsoy on 22.08.25.
 //
 
+import OSLog
 import SwiftUI
 import AssetLensCore
 
@@ -19,6 +20,8 @@ class GroupsViewModel: ObservableObject {
     var unusedGroupsCount: Int {
         similarityGroups.count { $0.allUnused }
     }
+    
+    private lazy var logger = Logger(for: Self.self)
     
     init(similarityGroups: [SimilarityGroup], usedSettings: AnalysisSettings) {
         self.similarityGroups = similarityGroups
@@ -98,10 +101,10 @@ class GroupsViewModel: ObservableObject {
                     }
                 }
             } else {
-                print("Could not find imageset to delete") // TODO: show UI error
+                logger.error("Could not find imageset to delete") // TODO: show UI error
             }
         } catch {
-            print("Could not delete item: \(error)") // TODO: show UI error
+            logger.error("Could not delete item: \(error)") // TODO: show UI error
         }
     }
 }

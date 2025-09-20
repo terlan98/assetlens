@@ -12,9 +12,12 @@ import UniformTypeIdentifiers
 @MainActor
 class FilePickerViewModel: ObservableObject {
     @Published var isDragOver = false
-    @Published var errorMessage: String?
+    @Published var errorMessage: String? {
+        didSet { resetErrorMessageAfterDelay() }
+    }
     
     private var selectedPath: String?
+    private var errorResetTask: Task<Void, Never>?
     private lazy var logger = Logger(for: Self.self)
     
     // MARK: - Drag and Drop
@@ -61,5 +64,18 @@ class FilePickerViewModel: ObservableObject {
         }
         
         return false
+    }
+    
+    private func resetErrorMessageAfterDelay() {
+        guard errorMessage != nil else { return }
+        errorResetTask?.cancel()
+        
+        errorResetTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            
+            if !Task.isCancelled {
+                self?.errorMessage = nil
+            }
+        }
     }
 }

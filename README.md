@@ -20,3 +20,10 @@ A MacOS app and command line tool for finding visually similar assets in Xcode p
 - Delete individual unused assets belonging to a group
 - Show assets in finder
 <img src="Screenshots/group-details.png" width="70%">
+
+# Perfect For
+- Keeping your app lightweight by eliminating duplicates
+- Facilitating asset organization for better developer experience
+
+# License
+This project is available under the GNU General Public License license.

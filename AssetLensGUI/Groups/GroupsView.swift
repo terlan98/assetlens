@@ -13,6 +13,7 @@ struct GroupsView: View {
         static let imageSize: CGFloat = 75
         static let groupMinWidth: CGFloat = 100
         static let groupCornerRadius: CGFloat = 14
+        static let gridCornerRadius: CGFloat = 28
         static let groupPadding: CGFloat = 10
         static let settingsDividerHeight: CGFloat = 14
     }
@@ -36,6 +37,8 @@ struct GroupsView: View {
         .navigationTitle("Groups")
         .padding()
         .onAppear { viewModel.setup() }
+        .animation(.easeInOut, value: viewModel.errorMessage)
+        .overlay(alignment: .bottomTrailing) { errorView }
         .sheet(item: $viewModel.selectedGroup) { group in
             GroupDetailView(group: group) { selection in
                 viewModel.delete(selection)
@@ -202,6 +205,17 @@ struct GroupsView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .animation(.easeInOut, value: viewModel.similarityGroups)
+    }
+    
+    @ViewBuilder
+    private var errorView: some View {
+        if let errorMessage = viewModel.errorMessage {
+            ErrorMessageView(message: errorMessage)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical)
+                .background(.background)
+                .transition(.push(from: .bottom))
+        }
     }
     
     private func groupNameAndSizeText(for group: SimilarityGroup, at index: Int) -> some View {

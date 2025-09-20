@@ -14,6 +14,7 @@ class GroupsViewModel: ObservableObject {
     @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
     @Published var similarityGroups: [SimilarityGroup]
     @Published var selectedGroup: SimilarityGroup?
+    @Published var errorMessage: String? // TODO: Tarlan - reset after 3 seconds
     
     var usedSettings: AnalysisSettings
     
@@ -101,10 +102,14 @@ class GroupsViewModel: ObservableObject {
                     }
                 }
             } else {
-                logger.error("Could not find imageset to delete") // TODO: show UI error
+                errorMessage = "Could not find the image set for \(asset.displayName)"
+                logger.error("Could not find imageset to delete for \(asset.displayName)")
+                selectedGroup = nil
             }
         } catch {
-            logger.error("Could not delete item: \(error)") // TODO: show UI error
+            errorMessage = "Could not delete image set for \(asset.displayName)"
+            logger.error("Could not delete \(asset.displayName): \(error)")
+            selectedGroup = nil
         }
     }
 }

@@ -17,10 +17,12 @@ struct FilePickerView: View {
             dropZoneSection
             
             if let error = viewModel.errorMessage {
-                errorSection(error)
+                ErrorMessageView(message: error)
+                    .transition(.push(from: .bottom))
             }
         }
         .padding(30)
+        .animation(.easeInOut, value: viewModel.errorMessage)
     }
     
     private var headerSection: some View {
@@ -69,20 +71,6 @@ struct FilePickerView: View {
         } isTargeted: {
             viewModel.isDragOver = $0
         }
-    }
-    
-    private func errorSection(_ error: String) -> some View {
-        HStack {
-            Image(systemName: "exclamationmark.triangle.fill")
-                .foregroundColor(.orange)
-            
-            Text(error)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding(10)
-        .background(Color.orange.opacity(0.1))
-        .cornerRadius(6)
     }
 }
 

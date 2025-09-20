@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5270BE9A2E53B23A00FAC10B /* AssetLensCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5270BE992E53B23A00FAC10B /* AssetLensCore */; };
+		526493E12E7EE37200CA3B84 /* AssetLensCore in Frameworks */ = {isa = PBXBuildFile; productRef = 526493E02E7EE37200CA3B84 /* AssetLensCore */; };
 		528F76EF2E50C10E00E0ED3B /* AssetLensCore in Frameworks */ = {isa = PBXBuildFile; productRef = 528F76EE2E50C10E00E0ED3B /* AssetLensCore */; };
 		52C23D6B2E50BD020076B00F /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 52C23D6A2E50BD010076B00F /* ArgumentParser */; };
 /* End PBXBuildFile section */
@@ -47,7 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5270BE9A2E53B23A00FAC10B /* AssetLensCore in Frameworks */,
+				526493E12E7EE37200CA3B84 /* AssetLensCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,7 +109,7 @@
 			);
 			name = AssetLensGUI;
 			packageProductDependencies = (
-				5270BE992E53B23A00FAC10B /* AssetLensCore */,
+				526493E02E7EE37200CA3B84 /* AssetLensCore */,
 			);
 			productName = AssetLensGUI;
 			productReference = 528F76F42E50C39500E0ED3B /* AssetLens.app */;
@@ -168,7 +168,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				52C23D692E50BD010076B00F /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
-				528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */,
+				526493DF2E7EE37200CA3B84 /* XCRemoteSwiftPackageReference "assetlens-core" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 52C8A0742E471B79009E060B /* Products */;
@@ -447,14 +447,15 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCLocalSwiftPackageReference section */
-		528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../AssetLensCore;
-		};
-/* End XCLocalSwiftPackageReference section */
-
 /* Begin XCRemoteSwiftPackageReference section */
+		526493DF2E7EE37200CA3B84 /* XCRemoteSwiftPackageReference "assetlens-core" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/terlan98/assetlens-core";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		52C23D692E50BD010076B00F /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
@@ -466,9 +467,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5270BE992E53B23A00FAC10B /* AssetLensCore */ = {
+		526493E02E7EE37200CA3B84 /* AssetLensCore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 528F76ED2E50C10E00E0ED3B /* XCLocalSwiftPackageReference "../AssetLensCore" */;
+			package = 526493DF2E7EE37200CA3B84 /* XCRemoteSwiftPackageReference "assetlens-core" */;
 			productName = AssetLensCore;
 		};
 		528F76EE2E50C10E00E0ED3B /* AssetLensCore */ = {

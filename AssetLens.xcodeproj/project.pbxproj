@@ -35,9 +35,9 @@
 			path = AssetLensGUI;
 			sourceTree = "<group>";
 		};
-		52C8A0752E471B79009E060B /* AssetLens */ = {
+		52C8A0752E471B79009E060B /* AssetLensCLI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = AssetLens;
+			path = AssetLensCLI;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -73,7 +73,7 @@
 		52C8A06A2E471B79009E060B = {
 			isa = PBXGroup;
 			children = (
-				52C8A0752E471B79009E060B /* AssetLens */,
+				52C8A0752E471B79009E060B /* AssetLensCLI */,
 				528F76F52E50C39500E0ED3B /* AssetLensGUI */,
 				5270BE982E53B23A00FAC10B /* Frameworks */,
 				52C8A0742E471B79009E060B /* Products */,
@@ -128,7 +128,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				52C8A0752E471B79009E060B /* AssetLens */,
+				52C8A0752E471B79009E060B /* AssetLensCLI */,
 			);
 			name = AssetLensCLI;
 			packageProductDependencies = (

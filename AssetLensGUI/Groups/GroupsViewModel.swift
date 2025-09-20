@@ -14,7 +14,9 @@ class GroupsViewModel: ObservableObject {
     @Published var currentSortingCriterion: GroupSortingCriterion = .unusedFirst
     @Published var similarityGroups: [SimilarityGroup]
     @Published var selectedGroup: SimilarityGroup?
-    @Published var errorMessage: String? // TODO: Tarlan - reset after 3 seconds
+    @Published var errorMessage: String? {
+        didSet { resetErrorMessageAfterDelay() }
+    }
     
     var usedSettings: AnalysisSettings
     
@@ -22,6 +24,7 @@ class GroupsViewModel: ObservableObject {
         similarityGroups.count { $0.allUnused }
     }
     
+    private var errorResetTask: Task<Void, Never>?
     private lazy var logger = Logger(for: Self.self)
     
     init(similarityGroups: [SimilarityGroup], usedSettings: AnalysisSettings) {
@@ -110,6 +113,19 @@ class GroupsViewModel: ObservableObject {
             errorMessage = "Could not delete image set for \(asset.displayName)"
             logger.error("Could not delete \(asset.displayName): \(error)")
             selectedGroup = nil
+        }
+    }
+    
+    private func resetErrorMessageAfterDelay() {
+        guard errorMessage != nil else { return }
+        errorResetTask?.cancel()
+        
+        errorResetTask = Task { @MainActor [weak self] in
+            try? await Task.sleep(for: .seconds(3))
+            
+            if !Task.isCancelled {
+                self?.errorMessage = nil
+            }
         }
     }
 }
